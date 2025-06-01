@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SubManager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
+        <div class="flex items-center justify-center h-16 border-b">
+            <a href="/index.html" class="flex items-center">
+                <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
+                <span class="text-2xl font-bold text-indigo-600">SubManager</span>
+            </a>
+        </div>
+        <nav class="mt-6">
+            <div class="px-4 space-y-2">
+                <a href="/pages/dashboard.html" class="flex items-center px-4 py-2 text-gray-700 bg-indigo-50 rounded-md">
+                    <i class="fas fa-home w-5 h-5 mr-3 text-indigo-600"></i>
+                    Dashboard
+                </a>
+                <a href="/pages/subscriptions.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md">
+                    <i class="fas fa-credit-card w-5 h-5 mr-3"></i>
+                    Assinaturas
+                </a>
+                <a href="/pages/analytics.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md">
+                    <i class="fas fa-chart-bar w-5 h-5 mr-3"></i>
+                    Análises
+                </a>
+                <a href="/pages/settings.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md">
+                    <i class="fas fa-cog w-5 h-5 mr-3"></i>
+                    Configurações
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64">
+        <!-- Top Navigation -->
+        <nav class="bg-white shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <h1 class="text-2xl font-semibold text-gray-900">Dashboard</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="text-gray-600 hover:text-gray-900">
+                            <i class="fas fa-bell text-xl"></i>
+                        </button>
+                        <div class="relative">
+                            <button onclick="window.location.href='/pages/settings.html'" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
+                                <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Usuario&background=6366f1&color=fff" alt="Avatar">
+                                <span>Usuário</span>
+                                <i class="fas fa-chevron-down text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Dashboard Content -->
+        <main class="py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Cards de Resumo -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <!-- Total de Assinaturas -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-indigo-100 text-indigo-600">
+                                <i class="fas fa-credit-card text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Total de Assinaturas</p>
+                                <p class="text-2xl font-semibold text-gray-900">12</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gasto Mensal -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                <i class="fas fa-dollar-sign text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Gasto Mensal</p>
+                                <p class="text-2xl font-semibold text-gray-900">R$ 299,90</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Próximos Vencimentos -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                                <i class="fas fa-calendar-alt text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Próximos Vencimentos</p>
+                                <p class="text-2xl font-semibold text-gray-900">3</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Economia -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-red-100 text-red-600">
+                                <i class="fas fa-piggy-bank text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Economia Mensal</p>
+                                <p class="text-2xl font-semibold text-gray-900">R$ 50,00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos e Tabelas -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Gráfico de Gastos -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Gastos por Categoria</h2>
+                        <canvas id="expensesChart" height="300"></canvas>
+                    </div>
+
+                    <!-- Próximos Vencimentos -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Próximos Vencimentos</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <img src="https://via.placeholder.com/40" alt="Netflix" class="w-10 h-10 rounded">
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-gray-900">Netflix</p>
+                                        <p class="text-sm text-gray-600">Vence em 5 dias</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">R$ 39,90</span>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <img src="https://via.placeholder.com/40" alt="Spotify" class="w-10 h-10 rounded">
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-gray-900">Spotify</p>
+                                        <p class="text-sm text-gray-600">Vence em 7 dias</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">R$ 19,90</span>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <img src="https://via.placeholder.com/40" alt="Amazon Prime" class="w-10 h-10 rounded">
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-gray-900">Amazon Prime</p>
+                                        <p class="text-sm text-gray-600">Vence em 12 dias</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-medium text-gray-900">R$ 14,90</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuração do gráfico de gastos
+        const ctx = document.getElementById('expensesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Streaming', 'Software', 'Serviços', 'Outros'],
+                datasets: [{
+                    data: [120, 80, 60, 40],
+                    backgroundColor: [
+                        '#6366f1',
+                        '#10b981',
+                        '#f59e0b',
+                        '#ef4444'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

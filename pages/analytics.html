@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análises - SubManager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
+        <div class="flex items-center justify-center h-16 border-b">
+            <a href="/index.html" class="flex items-center">
+                <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
+                <span class="text-2xl font-bold text-indigo-600">SubManager</span>
+            </a>
+        </div>
+        <nav class="mt-6">
+            <div class="px-4 space-y-2">
+                <a href="/pages/dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md">
+                    <i class="fas fa-home w-5 h-5 mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="/pages/subscriptions.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md">
+                    <i class="fas fa-credit-card w-5 h-5 mr-3"></i>
+                    Assinaturas
+                </a>
+                <a href="/pages/analytics.html" class="flex items-center px-4 py-2 text-gray-700 bg-indigo-50 rounded-md">
+                    <i class="fas fa-chart-bar w-5 h-5 mr-3 text-indigo-600"></i>
+                    Análises
+                </a>
+                <a href="/pages/settings.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md">
+                    <i class="fas fa-cog w-5 h-5 mr-3"></i>
+                    Configurações
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64">
+        <!-- Top Navigation -->
+        <nav class="bg-white shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <h1 class="text-2xl font-semibold text-gray-900">Análises</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="text-gray-600 hover:text-gray-900">
+                            <i class="fas fa-bell text-xl"></i>
+                        </button>
+                        <div class="relative">
+                            <button onclick="window.location.href='/pages/settings.html'" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
+                                <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Usuario&background=6366f1&color=fff" alt="Avatar">
+                                <span>Usuário</span>
+                                <i class="fas fa-chevron-down text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Analytics Content -->
+        <main class="py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Filtros -->
+                <div class="mb-6 flex justify-between items-center">
+                    <div class="flex space-x-4">
+                        <select class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="30">Últimos 30 dias</option>
+                            <option value="90">Últimos 90 dias</option>
+                            <option value="180">Últimos 6 meses</option>
+                            <option value="365">Último ano</option>
+                        </select>
+                        <button onclick="window.location.href='/pages/analytics/export.html'" class="border border-gray-300 rounded-md px-4 py-2 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <i class="fas fa-download mr-2"></i>
+                            Exportar Relatório
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cards de Resumo -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <!-- Total Gasto -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Total Gasto</p>
+                                <p class="text-2xl font-semibold text-gray-900">R$ 1.234,56</p>
+                            </div>
+                            <div class="p-3 bg-indigo-100 rounded-full">
+                                <i class="fas fa-dollar-sign text-indigo-600"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-sm text-green-600">
+                                <i class="fas fa-arrow-up mr-1"></i>
+                                12% em relação ao mês anterior
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Assinaturas Ativas -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Assinaturas Ativas</p>
+                                <p class="text-2xl font-semibold text-gray-900">8</p>
+                            </div>
+                            <div class="p-3 bg-green-100 rounded-full">
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-sm text-gray-600">
+                                2 novas este mês
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Economia Mensal -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Economia Mensal</p>
+                                <p class="text-2xl font-semibold text-gray-900">R$ 156,78</p>
+                            </div>
+                            <div class="p-3 bg-green-100 rounded-full">
+                                <i class="fas fa-piggy-bank text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-sm text-green-600">
+                                <i class="fas fa-arrow-up mr-1"></i>
+                                8% em relação ao mês anterior
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Próximos Vencimentos -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Próximos Vencimentos</p>
+                                <p class="text-2xl font-semibold text-gray-900">3</p>
+                            </div>
+                            <div class="p-3 bg-yellow-100 rounded-full">
+                                <i class="fas fa-clock text-yellow-600"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-sm text-gray-600">
+                                Nos próximos 7 dias
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Gastos por Categoria -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Gastos por Categoria</h3>
+                        <div class="h-80">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Evolução dos Gastos -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Evolução dos Gastos</h3>
+                        <div class="h-80">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela de Análise Detalhada -->
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Análise Detalhada por Serviço</h3>
+                    </div>
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Serviço
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Categoria
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Gasto Mensal
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Variação
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <img src="https://via.placeholder.com/40" alt="Netflix" class="w-10 h-10 rounded">
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Netflix</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                        Streaming
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    R$ 39,90
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-sm text-green-600">
+                                        <i class="fas fa-arrow-up mr-1"></i>
+                                        0%
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        Estável
+                                    </span>
+                                </td>
+                            </tr>
+                            <!-- Adicione mais linhas conforme necessário -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Gráfico de Gastos por Categoria
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Streaming', 'Software', 'Serviços', 'Outros'],
+                datasets: [{
+                    data: [45, 25, 20, 10],
+                    backgroundColor: [
+                        '#818CF8',
+                        '#34D399',
+                        '#FBBF24',
+                        '#F87171'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Gráfico de Evolução dos Gastos
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                datasets: [{
+                    label: 'Gastos Mensais',
+                    data: [1200, 1150, 1300, 1250, 1400, 1234.56],
+                    borderColor: '#818CF8',
+                    tension: 0.4,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function(value) {
+                                return 'R$ ' + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

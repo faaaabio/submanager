@@ -4,34 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configurações - SubManager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="bg-gray-50">
+    <!-- Overlay para mobile -->
+    <div id="overlay" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden lg:hidden z-20" onclick="toggleMobileMenu()"></div>
+
     <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
-        <div class="flex items-center justify-center h-16 border-b">
-            <a href="/index.html" class="flex items-center">
-                <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
-                <span class="text-2xl font-bold text-indigo-600">SubManager</span>
+    <div id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-30">
+        <div class="flex items-center justify-between h-16 px-4 border-b">
+            <a href="/pages/dashboard.html" class="flex items-center">
+                <i class="fas fa-wallet text-indigo-600 text-xl sm:text-2xl mr-2"></i>
+                <span class="text-xl sm:text-2xl font-bold text-indigo-600">SubManager</span>
             </a>
+            <button class="lg:hidden text-gray-500 hover:text-gray-600" onclick="toggleMobileMenu()">
+                <i class="fas fa-times text-lg sm:text-xl"></i>
+            </button>
         </div>
-        <nav class="mt-6">
-            <div class="px-4 space-y-2">
-                <a href="/pages/dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-home w-5 h-5 mr-3"></i>
+        <nav class="mt-4 sm:mt-6">
+            <div class="px-2 sm:px-4 space-y-1 sm:space-y-2">
+                <a href="/pages/dashboard.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
+                    <i class="fas fa-home w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
                     Dashboard
                 </a>
-                <a href="/pages/subscriptions.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-credit-card w-5 h-5 mr-3"></i>
+                <a href="/pages/subscriptions.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
+                    <i class="fas fa-credit-card w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
                     Assinaturas
                 </a>
-                <a href="/pages/analytics.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-chart-bar w-5 h-5 mr-3"></i>
+                <a href="/pages/analytics.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
+                    <i class="fas fa-chart-bar w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
                     Análises
                 </a>
-                <a href="/pages/settings.html" class="flex items-center px-4 py-2 text-gray-700 bg-indigo-50 rounded-md">
-                    <i class="fas fa-cog w-5 h-5 mr-3 text-indigo-600"></i>
+                <a href="/pages/settings.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-700 bg-indigo-50 rounded-md">
+                    <i class="fas fa-cog w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-indigo-600"></i>
                     Configurações
                 </a>
             </div>
@@ -39,23 +59,26 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64">
+    <div class="lg:ml-64">
         <!-- Top Navigation -->
         <nav class="bg-white shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
+            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-14 sm:h-16">
                     <div class="flex items-center">
-                        <h1 class="text-2xl font-semibold text-gray-900">Configurações</h1>
+                        <button class="lg:hidden text-gray-500 hover:text-gray-600 mr-2 sm:mr-4" onclick="toggleMobileMenu()">
+                            <i class="fas fa-bars text-lg sm:text-xl"></i>
+                        </button>
+                        <h1 class="text-lg sm:text-2xl font-semibold text-gray-900">Configurações</h1>
                     </div>
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 sm:space-x-4">
                         <button class="text-gray-600 hover:text-gray-900">
-                            <i class="fas fa-bell text-xl"></i>
+                            <i class="fas fa-bell text-lg sm:text-xl"></i>
                         </button>
                         <div class="relative">
-                            <button onclick="window.location.href='/pages/settings.html'" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
-                                <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Victor+Chiabai&background=6366f1&color=fff" alt="Avatar">
-                                <span>Victor Chiabai</span>
-                                <i class="fas fa-chevron-down text-sm"></i>
+                            <button onclick="window.location.href='/pages/settings.html'" class="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-gray-900">
+                                <img class="h-7 w-7 sm:h-8 sm:w-8 rounded-full" src="https://ui-avatars.com/api/?name=Fabio+Lino&background=6366f1&color=fff" alt="Avatar">
+                                <span class="hidden sm:inline text-sm sm:text-base">Fabio Lino</span>
+                                <i class="fas fa-chevron-down text-xs sm:text-sm"></i>
                             </button>
                         </div>
                     </div>
@@ -64,94 +87,41 @@
         </nav>
 
         <!-- Settings Content -->
-        <main class="py-6">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="mb-6">
-                    <h2 class="text-2xl font-semibold text-gray-900">Configurações</h2>
-                    <p class="mt-1 text-sm text-gray-600">Gerencie suas informações pessoais</p>
-                </div>
-
-                <!-- Configurações do Perfil -->
-                <div class="bg-white shadow-sm rounded-lg">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-medium text-gray-900">Perfil</h3>
-                    </div>
-                    <div class="p-6">
-                        <form class="space-y-6">
-                            <!-- Nome Completo -->
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700">Nome Completo</label>
-                                <input type="text" name="name" id="name" value="Victor Chiabai" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                            </div>
-
-                            <!-- Email -->
-                            <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                                <input type="email" name="email" id="email" value="usuario@email.com" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                            </div>
-
-                            <!-- Telefone -->
-                            <div>
-                                <label for="phone" class="block text-sm font-medium text-gray-700">Telefone</label>
-                                <input type="tel" name="phone" id="phone" value="(11) 99999-9999" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                            </div>
-
-                            <!-- Botão Salvar -->
-                            <div class="flex justify-end">
-                                <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    Salvar Alterações
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
+        <main class="py-4 sm:py-6">
+            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
                 <!-- Notificações -->
-                <div class="mt-6 bg-white shadow-sm rounded-lg">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-medium text-gray-900">Notificações</h3>
-                    </div>
-                    <div class="p-6">
-                        <div class="space-y-4">
-                            <!-- Email -->
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h4 class="text-sm font-medium text-gray-900">Notificações por Email</h4>
-                                    <p class="text-sm text-gray-500">Receba alertas sobre vencimentos e ofertas</p>
-                                </div>
-                                <div class="relative inline-block w-10 mr-2 align-middle select-none">
-                                    <input type="checkbox" name="email-notifications" id="email-notifications" class="sr-only" checked>
-                                    <div class="block bg-gray-300 w-10 h-6 rounded-full"></div>
-                                    <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition"></div>
-                                </div>
+                <div class="bg-white shadow-sm rounded-lg p-3 sm:p-6">
+                    <h2 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Notificações</h2>
+                    <div class="space-y-3 sm:space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-sm sm:text-base font-medium text-gray-900">Alertas de Pagamento</h3>
+                                <p class="text-xs sm:text-sm text-gray-500">Receba lembretes antes do vencimento das assinaturas</p>
                             </div>
-
-                            <!-- Lembretes -->
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h4 class="text-sm font-medium text-gray-900">Lembretes de Vencimento</h4>
-                                    <p class="text-sm text-gray-500">Receba lembretes antes do vencimento das assinaturas</p>
-                                </div>
-                                <div class="relative inline-block w-10 mr-2 align-middle select-none">
-                                    <input type="checkbox" name="reminders" id="reminders" class="sr-only" checked>
-                                    <div class="block bg-gray-300 w-10 h-6 rounded-full"></div>
-                                    <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition"></div>
-                                </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" checked>
+                                <div class="w-9 h-5 sm:w-11 sm:h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 sm:after:h-5 sm:after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-sm sm:text-base font-medium text-gray-900">Ofertas Exclusivas</h3>
+                                <p class="text-xs sm:text-sm text-gray-500">Receba notificações sobre descontos e promoções</p>
                             </div>
-
-                            <!-- Ofertas -->
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h4 class="text-sm font-medium text-gray-900">Ofertas Exclusivas</h4>
-                                    <p class="text-sm text-gray-500">Receba notificações sobre descontos e promoções</p>
-                                </div>
-                                <div class="relative inline-block w-10 mr-2 align-middle select-none">
-                                    <input type="checkbox" name="offers" id="offers" class="sr-only">
-                                    <div class="block bg-gray-300 w-10 h-6 rounded-full"></div>
-                                    <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition"></div>
-                                </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" checked>
+                                <div class="w-9 h-5 sm:w-11 sm:h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 sm:after:h-5 sm:after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-sm sm:text-base font-medium text-gray-900">Atualizações do Sistema</h3>
+                                <p class="text-xs sm:text-sm text-gray-500">Receba notificações sobre novas funcionalidades</p>
                             </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer">
+                                <div class="w-9 h-5 sm:w-11 sm:h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 sm:after:h-5 sm:after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -169,5 +139,15 @@
             background-color: #818cf8;
         }
     </style>
+
+    <script>
+        // Função para controlar o menu mobile
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+    </script>
 </body>
 </html> 

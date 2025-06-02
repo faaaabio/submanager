@@ -4,35 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Análises - SubManager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-50">
+    <!-- Overlay para mobile -->
+    <div id="overlay" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden lg:hidden z-20" onclick="toggleMobileMenu()"></div>
+
     <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
-        <div class="flex items-center justify-center h-16 border-b">
-            <a href="/index.html" class="flex items-center">
-                <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
-                <span class="text-2xl font-bold text-indigo-600">SubManager</span>
+    <div id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-30">
+        <div class="flex items-center justify-between h-16 px-4 border-b">
+            <a href="/pages/dashboard.html" class="flex items-center">
+                <i class="fas fa-wallet text-indigo-600 text-xl sm:text-2xl mr-2"></i>
+                <span class="text-xl sm:text-2xl font-bold text-indigo-600">SubManager</span>
             </a>
+            <button class="lg:hidden text-gray-500 hover:text-gray-600" onclick="toggleMobileMenu()">
+                <i class="fas fa-times text-lg sm:text-xl"></i>
+            </button>
         </div>
-        <nav class="mt-6">
-            <div class="px-4 space-y-2">
-                <a href="/pages/dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-home w-5 h-5 mr-3"></i>
+        <nav class="mt-4 sm:mt-6">
+            <div class="px-2 sm:px-4 space-y-1 sm:space-y-2">
+                <a href="/pages/dashboard.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
+                    <i class="fas fa-home w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
                     Dashboard
                 </a>
-                <a href="/pages/subscriptions.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-credit-card w-5 h-5 mr-3"></i>
+                <a href="/pages/subscriptions.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
+                    <i class="fas fa-credit-card w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
                     Assinaturas
                 </a>
-                <a href="/pages/analytics.html" class="flex items-center px-4 py-2 text-gray-700 bg-indigo-50 rounded-md">
-                    <i class="fas fa-chart-bar w-5 h-5 mr-3 text-indigo-600"></i>
+                <a href="/pages/analytics.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-700 bg-indigo-50 rounded-md">
+                    <i class="fas fa-chart-bar w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-indigo-600"></i>
                     Análises
                 </a>
-                <a href="/pages/settings.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-cog w-5 h-5 mr-3"></i>
+                <a href="/pages/settings.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
+                    <i class="fas fa-cog w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
                     Configurações
                 </a>
             </div>
@@ -40,23 +60,26 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64">
+    <div class="lg:ml-64">
         <!-- Top Navigation -->
         <nav class="bg-white shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
+            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-14 sm:h-16">
                     <div class="flex items-center">
-                        <h1 class="text-2xl font-semibold text-gray-900">Análises</h1>
+                        <button class="lg:hidden text-gray-500 hover:text-gray-600 mr-2 sm:mr-4" onclick="toggleMobileMenu()">
+                            <i class="fas fa-bars text-lg sm:text-xl"></i>
+                        </button>
+                        <h1 class="text-lg sm:text-2xl font-semibold text-gray-900">Análises</h1>
                     </div>
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 sm:space-x-4">
                         <button class="text-gray-600 hover:text-gray-900">
-                            <i class="fas fa-bell text-xl"></i>
+                            <i class="fas fa-bell text-lg sm:text-xl"></i>
                         </button>
                         <div class="relative">
-                            <button onclick="window.location.href='/pages/settings.html'" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
-                                <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Usuario&background=6366f1&color=fff" alt="Avatar">
-                                <span>Usuário</span>
-                                <i class="fas fa-chevron-down text-sm"></i>
+                            <button onclick="window.location.href='/pages/settings.html'" class="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-gray-900">
+                                <img class="h-7 w-7 sm:h-8 sm:w-8 rounded-full" src="https://ui-avatars.com/api/?name=Fabio+Lino&background=6366f1&color=fff" alt="Avatar">
+                                <span class="hidden sm:inline text-sm sm:text-base">Fabio Lino</span>
+                                <i class="fas fa-chevron-down text-xs sm:text-sm"></i>
                             </button>
                         </div>
                     </div>
@@ -65,81 +88,79 @@
         </nav>
 
         <!-- Analytics Content -->
-        <main class="py-6">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <!-- Header -->
-                <div class="mb-6">
-                    <h2 class="text-2xl font-semibold text-gray-900">Análises</h2>
-                    <p class="mt-1 text-sm text-gray-600">Visualize seus gastos e economias com assinaturas</p>
-                </div>
-
-                <!-- Cards de Resumo -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <main class="py-4 sm:py-6">
+            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+                <!-- Cards de Métricas -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-6">
                     <!-- Total Gasto -->
-                    <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="bg-white rounded-lg shadow-sm p-3 sm:p-6">
                         <div class="flex items-center">
-                            <div class="p-3 rounded-full bg-indigo-100 text-indigo-600">
-                                <i class="fas fa-dollar-sign text-xl"></i>
+                            <div class="p-2 sm:p-3 rounded-full bg-indigo-100 text-indigo-600">
+                                <i class="fas fa-dollar-sign text-base sm:text-xl"></i>
                             </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-600">Total Gasto</p>
-                                <p class="text-2xl font-semibold text-gray-900">R$ 299,90</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Economia -->
-                    <div class="bg-white rounded-lg shadow-sm p-6">
-                        <div class="flex items-center">
-                            <div class="p-3 rounded-full bg-green-100 text-green-600">
-                                <i class="fas fa-piggy-bank text-xl"></i>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-600">Economia</p>
-                                <p class="text-2xl font-semibold text-gray-900">R$ 50,00</p>
+                            <div class="ml-3 sm:ml-4">
+                                <p class="text-xs sm:text-sm font-medium text-gray-600">Total Gasto</p>
+                                <p class="text-lg sm:text-2xl font-semibold text-gray-900">R$ 25,80</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Assinaturas Ativas -->
-                    <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="bg-white rounded-lg shadow-sm p-3 sm:p-6">
                         <div class="flex items-center">
-                            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-                                <i class="fas fa-credit-card text-xl"></i>
+                            <div class="p-2 sm:p-3 rounded-full bg-green-100 text-green-600">
+                                <i class="fas fa-check-circle text-base sm:text-xl"></i>
                             </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-600">Assinaturas Ativas</p>
-                                <p class="text-2xl font-semibold text-gray-900">4</p>
+                            <div class="ml-3 sm:ml-4">
+                                <p class="text-xs sm:text-sm font-medium text-gray-600">Assinaturas Ativas</p>
+                                <p class="text-lg sm:text-2xl font-semibold text-gray-900">2</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Média por Assinatura -->
-                    <div class="bg-white rounded-lg shadow-sm p-6">
+                    <!-- Economia -->
+                    <div class="bg-white rounded-lg shadow-sm p-3 sm:p-6">
                         <div class="flex items-center">
-                            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-                                <i class="fas fa-chart-line text-xl"></i>
+                            <div class="p-2 sm:p-3 rounded-full bg-red-100 text-red-600">
+                                <i class="fas fa-piggy-bank text-base sm:text-xl"></i>
                             </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-600">Média por Assinatura</p>
-                                <p class="text-2xl font-semibold text-gray-900">R$ 74,98</p>
+                            <div class="ml-3 sm:ml-4">
+                                <p class="text-xs sm:text-sm font-medium text-gray-600">Economia</p>
+                                <p class="text-lg sm:text-2xl font-semibold text-gray-900">R$ 20,00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Próximo Pagamento -->
+                    <div class="bg-white rounded-lg shadow-sm p-3 sm:p-6">
+                        <div class="flex items-center">
+                            <div class="p-2 sm:p-3 rounded-full bg-yellow-100 text-yellow-600">
+                                <i class="fas fa-calendar text-base sm:text-xl"></i>
+                            </div>
+                            <div class="ml-3 sm:ml-4">
+                                <p class="text-xs sm:text-sm font-medium text-gray-600">Próximo Pagamento</p>
+                                <p class="text-lg sm:text-2xl font-semibold text-gray-900">15/06</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Gráficos -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
                     <!-- Gráfico de Gastos por Categoria -->
-                    <div class="bg-white rounded-lg shadow-sm p-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Gastos por Categoria</h3>
-                        <canvas id="categoryChart" height="300"></canvas>
+                    <div class="bg-white rounded-lg shadow-sm p-3 sm:p-6">
+                        <h2 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Gastos por Categoria</h2>
+                        <div class="h-48 sm:h-64 md:h-80">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
                     </div>
 
                     <!-- Gráfico de Evolução -->
-                    <div class="bg-white rounded-lg shadow-sm p-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Evolução dos Gastos</h3>
-                        <canvas id="evolutionChart" height="300"></canvas>
+                    <div class="bg-white rounded-lg shadow-sm p-3 sm:p-6">
+                        <h2 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Evolução dos Gastos</h2>
+                        <div class="h-48 sm:h-64 md:h-80">
+                            <canvas id="evolutionChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,18 +168,24 @@
     </div>
 
     <script>
+        // Função para controlar o menu mobile
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
         // Configuração do gráfico de categorias
         const categoryCtx = document.getElementById('categoryChart').getContext('2d');
         new Chart(categoryCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Streaming', 'Música', 'Jogos', 'Compras'],
+                labels: ['Vídeos', 'Canais ao Vivo'],
                 datasets: [{
-                    data: [39.90, 19.90, 44.90, 14.90],
+                    data: [12.90, 12.90],
                     backgroundColor: [
-                        '#6366f1',
-                        '#10b981',
-                        '#8b5cf6',
+                        '#ef4444',
                         '#3b82f6'
                     ]
                 }]
@@ -167,7 +194,12 @@
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 12
+                            }
+                        }
                     }
                 }
             }
@@ -181,7 +213,7 @@
                 labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
                 datasets: [{
                     label: 'Gastos Mensais',
-                    data: [250, 280, 299.90, 299.90, 299.90, 299.90],
+                    data: [0, 0, 0, 0, 25.80, 25.80],
                     borderColor: '#6366f1',
                     tension: 0.4,
                     fill: false
@@ -191,15 +223,27 @@
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 12
+                            }
+                        }
                     }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            callback: function(value) {
-                                return 'R$ ' + value.toFixed(2);
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 12
                             }
                         }
                     }

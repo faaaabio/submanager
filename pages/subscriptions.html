@@ -4,34 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assinaturas - SubManager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="bg-gray-50">
+    <!-- Overlay para mobile -->
+    <div id="overlay" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden lg:hidden z-20" onclick="toggleMobileMenu()"></div>
+
     <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
-        <div class="flex items-center justify-center h-16 border-b">
-            <a href="/index.html" class="flex items-center">
-                <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
-                <span class="text-2xl font-bold text-indigo-600">SubManager</span>
+    <div id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-30">
+        <div class="flex items-center justify-between h-16 px-4 border-b">
+            <a href="/pages/dashboard.html" class="flex items-center">
+                <i class="fas fa-wallet text-indigo-600 text-xl sm:text-2xl mr-2"></i>
+                <span class="text-xl sm:text-2xl font-bold text-indigo-600">SubManager</span>
             </a>
+            <button class="lg:hidden text-gray-500 hover:text-gray-600" onclick="toggleMobileMenu()">
+                <i class="fas fa-times text-lg sm:text-xl"></i>
+            </button>
         </div>
-        <nav class="mt-6">
-            <div class="px-4 space-y-2">
-                <a href="/pages/dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-home w-5 h-5 mr-3"></i>
+        <nav class="mt-4 sm:mt-6">
+            <div class="px-2 sm:px-4 space-y-1 sm:space-y-2">
+                <a href="/pages/dashboard.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
+                    <i class="fas fa-home w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
                     Dashboard
                 </a>
-                <a href="/pages/subscriptions.html" class="flex items-center px-4 py-2 text-gray-700 bg-indigo-50 rounded-md">
-                    <i class="fas fa-credit-card w-5 h-5 mr-3 text-indigo-600"></i>
+                <a href="/pages/subscriptions.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-700 bg-indigo-50 rounded-md">
+                    <i class="fas fa-credit-card w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-indigo-600"></i>
                     Assinaturas
                 </a>
-                <a href="/pages/analytics.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-chart-bar w-5 h-5 mr-3"></i>
+                <a href="/pages/analytics.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
+                    <i class="fas fa-chart-bar w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
                     Análises
                 </a>
-                <a href="/pages/settings.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-cog w-5 h-5 mr-3"></i>
+                <a href="/pages/settings.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
+                    <i class="fas fa-cog w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
                     Configurações
                 </a>
             </div>
@@ -39,23 +59,27 @@
     </div>
 
     <!-- Main Content -->
-    <div class="ml-64">
+    <div class="lg:ml-64">
         <!-- Top Navigation -->
         <nav class="bg-white shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
+            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-14 sm:h-16">
                     <div class="flex items-center">
-                        <h1 class="text-2xl font-semibold text-gray-900">Assinaturas</h1>
+                        <button class="lg:hidden text-gray-500 hover:text-gray-600 mr-2 sm:mr-4" onclick="toggleMobileMenu()">
+                            <i class="fas fa-bars text-lg sm:text-xl"></i>
+                        </button>
+                        <h1 class="text-lg sm:text-2xl font-semibold text-gray-900">Assinaturas</h1>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <button class="text-gray-600 hover:text-gray-900">
-                            <i class="fas fa-bell text-xl"></i>
+                    <div class="flex items-center space-x-2 sm:space-x-4">
+                        <button onclick="window.open('/index.html', '_blank')" class="bg-indigo-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <i class="fas fa-plus mr-1 sm:mr-2"></i>
+                            Nova Assinatura
                         </button>
                         <div class="relative">
-                            <button onclick="window.location.href='/pages/settings.html'" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900">
-                                <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name=Usuario&background=6366f1&color=fff" alt="Avatar">
-                                <span>Usuário</span>
-                                <i class="fas fa-chevron-down text-sm"></i>
+                            <button onclick="window.location.href='/pages/settings.html'" class="flex items-center space-x-1 sm:space-x-2 text-gray-600 hover:text-gray-900">
+                                <img class="h-7 w-7 sm:h-8 sm:w-8 rounded-full" src="https://ui-avatars.com/api/?name=Fabio+Lino&background=6366f1&color=fff" alt="Avatar">
+                                <span class="hidden sm:inline text-sm sm:text-base">Fabio Lino</span>
+                                <i class="fas fa-chevron-down text-xs sm:text-sm"></i>
                             </button>
                         </div>
                     </div>
@@ -64,18 +88,18 @@
         </nav>
 
         <!-- Subscriptions Content -->
-        <main class="py-6">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <main class="py-4 sm:py-6">
+            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
                 <!-- Header com Ações -->
                 <div class="mb-6 flex justify-between items-center">
-                    <div class="flex space-x-4">
+                    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
                         <div class="relative">
                             <input type="text" 
                                 placeholder="Buscar assinaturas..." 
-                                class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                class="w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                             <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                         </div>
-                        <select class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <select class="w-full sm:w-auto border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                             <option value="">Todas as categorias</option>
                             <option value="streaming">Streaming</option>
                             <option value="software">Software</option>
@@ -83,244 +107,103 @@
                             <option value="outros">Outros</option>
                         </select>
                     </div>
-                    <button onclick="window.location.href='/pages/subscriptions/new.html'" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        <i class="fas fa-plus mr-2"></i>
-                        Nova Assinatura
-                    </button>
                 </div>
 
                 <!-- Tabela de Assinaturas -->
                 <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Serviço
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Categoria
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Valor
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Próximo Vencimento
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Ações
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <!-- Netflix -->
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                                            <i class="fas fa-film text-red-600 text-xl"></i>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Assinatura</th>
+                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
+                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="px-3 sm:px-6 py-3 text-right text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <!-- Globoplay -->
+                                <tr>
+                                    <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                                <i class="fas fa-tv text-blue-600 text-sm sm:text-xl"></i>
+                                            </div>
+                                            <div class="ml-2 sm:ml-4">
+                                                <div class="text-xs sm:text-sm font-medium text-gray-900">Globoplay</div>
+                                                <div class="text-xs text-gray-500">Premium</div>
+                                            </div>
                                         </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900">Netflix</div>
-                                            <div class="text-sm text-gray-500">Plano Premium</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                                        Streaming
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    R$ 39,90
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    15/03/2024
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        Ativo
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <a href="/pages/subscriptions/edit.html?id=1" class="text-indigo-600 hover:text-indigo-900 mr-3">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="#" class="text-red-600 hover:text-red-900">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                        <div class="text-xs sm:text-sm text-gray-900">Canais ao Vivo</div>
+                                    </td>
+                                    <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                        <div class="text-xs sm:text-sm text-gray-900">R$ 12,90</div>
+                                        <div class="text-xs text-gray-500">Mensal</div>
+                                    </td>
+                                    <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">Ativo</span>
+                                    </td>
+                                    <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-xs sm:text-sm font-medium">
+                                        <button class="text-indigo-600 hover:text-indigo-900 mr-2 sm:mr-3">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
 
-                            <!-- Spotify -->
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                                            <i class="fas fa-music text-green-600 text-xl"></i>
+                                <!-- YouTube Premium -->
+                                <tr>
+                                    <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-red-100 flex items-center justify-center">
+                                                <i class="fab fa-youtube text-red-600 text-sm sm:text-xl"></i>
+                                            </div>
+                                            <div class="ml-2 sm:ml-4">
+                                                <div class="text-xs sm:text-sm font-medium text-gray-900">YouTube Premium</div>
+                                                <div class="text-xs text-gray-500">Individual</div>
+                                            </div>
                                         </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900">Spotify</div>
-                                            <div class="text-sm text-gray-500">Plano Individual</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        Música
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    R$ 19,90
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    20/03/2024
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        Ativo
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <a href="/pages/subscriptions/edit.html?id=2" class="text-indigo-600 hover:text-indigo-900 mr-3">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="#" class="text-red-600 hover:text-red-900">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
-                                </td>
-                            </tr>
-
-                            <!-- Amazon Prime -->
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                            <i class="fas fa-shopping-bag text-blue-600 text-xl"></i>
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900">Amazon Prime</div>
-                                            <div class="text-sm text-gray-500">Assinatura Anual</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                        Compras
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    R$ 14,90
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    25/03/2024
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        Ativo
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <a href="/pages/subscriptions/edit.html?id=3" class="text-indigo-600 hover:text-indigo-900 mr-3">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="#" class="text-red-600 hover:text-red-900">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
-                                </td>
-                            </tr>
-
-                            <!-- Xbox Game Pass -->
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                            <i class="fas fa-gamepad text-purple-600 text-xl"></i>
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900">Xbox Game Pass</div>
-                                            <div class="text-sm text-gray-500">Plano Ultimate</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                                        Jogos
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    R$ 44,90
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    30/03/2024
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        Ativo
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <a href="/pages/subscriptions/edit.html?id=4" class="text-indigo-600 hover:text-indigo-900 mr-3">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="#" class="text-red-600 hover:text-red-900">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <!-- Paginação -->
-                    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                        <div class="flex-1 flex justify-between sm:hidden">
-                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                Anterior
-                            </a>
-                            <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                Próxima
-                            </a>
-                        </div>
-                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                            <div>
-                                <p class="text-sm text-gray-700">
-                                    Mostrando
-                                    <span class="font-medium">1</span>
-                                    a
-                                    <span class="font-medium">3</span>
-                                    de
-                                    <span class="font-medium">12</span>
-                                    resultados
-                                </p>
-                            </div>
-                            <div>
-                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                        <span class="sr-only">Anterior</span>
-                                        <i class="fas fa-chevron-left"></i>
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                        1
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-50 text-sm font-medium text-indigo-600 hover:bg-indigo-100">
-                                        2
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                        3
-                                    </a>
-                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                        <span class="sr-only">Próxima</span>
-                                        <i class="fas fa-chevron-right"></i>
-                                    </a>
-                                </nav>
-                            </div>
-                        </div>
+                                    </td>
+                                    <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                        <div class="text-xs sm:text-sm text-gray-900">Vídeos</div>
+                                    </td>
+                                    <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                        <div class="text-xs sm:text-sm text-gray-900">R$ 12,90</div>
+                                        <div class="text-xs text-gray-500">Mensal</div>
+                                    </td>
+                                    <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">Ativo</span>
+                                    </td>
+                                    <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-xs sm:text-sm font-medium">
+                                        <button class="text-indigo-600 hover:text-indigo-900 mr-2 sm:mr-3">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </main>
     </div>
+
+    <script>
+        // Função para controlar o menu mobile
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+    </script>
 </body>
 </html> 

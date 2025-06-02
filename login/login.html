@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gerencie suas assinaturas de forma inteligente com o SubManager">
+    <meta name="theme-color" content="#6366f1">
+    <title>Login - SubManager</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💳</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .loading {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+        }
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Loading -->
+    <div id="loading" class="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Login Content -->
+    <main class="min-h-screen flex items-center justify-center py-4 sm:py-6">
+        <div class="w-full max-w-md px-3 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-lg shadow-sm p-6 sm:p-8">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Login</h1>
+                <form id="form-login" onsubmit="fazerLogin(event)" class="space-y-4 sm:space-y-6">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label for="senha" class="block text-sm font-medium text-gray-700">Senha</label>
+                        <input type="password" id="senha" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div id="mensagem-erro" class="hidden text-sm text-red-600"></div>
+                    <div id="mensagem-sucesso" class="hidden text-sm text-green-600"></div>
+                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Entrar
+                    </button>
+                </form>
+                <div class="mt-4 sm:mt-6 text-center">
+                    <p class="text-sm text-gray-600">
+                        Não tem uma conta?
+                        <a href="/login/register.html" class="font-medium text-indigo-600 hover:text-indigo-500">
+                            Registre-se
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        // Importa a configuração do Supabase
+        import { getSupabaseConfig } from '/config.js'
+
+        // Função para inicializar o cliente Supabase de forma segura
+        async function inicializarSupabase() {
+            try {
+                console.log('Iniciando carregamento da configuração do Supabase...')
+                const config = await getSupabaseConfig()
+                
+                if (!config.url || !config.key) {
+                    console.error('Configuração incompleta:', { url: !!config.url, key: !!config.key })
+                    throw new Error('Configuração do Supabase incompleta')
+                }
+
+                console.log('Configuração carregada com sucesso, criando cliente...')
+                const client = window.supabase.createClient(config.url, config.key)
+                
+                // Testa a conexão
+                const { data, error } = await client.auth.getSession()
+                if (error) {
+                    console.error('Erro ao testar conexão:', error)
+                    throw new Error('Erro ao conectar com o servidor')
+                }
+                
+                console.log('Cliente Supabase inicializado com sucesso')
+                return client
+            } catch (error) {
+                console.error('Erro detalhado ao inicializar Supabase:', {
+                    mensagem: error.message,
+                    stack: error.stack,
+                    nome: error.name
+                })
+                mostrarNotificacao('Erro ao inicializar o sistema. Por favor, tente novamente mais tarde.', 'erro')
+                return null
+            }
+        }
+
+        // Inicializa o cliente Supabase
+        let supabase = null
+        inicializarSupabase().then(client => {
+            if (client) {
+                supabase = client
+                console.log('Cliente Supabase configurado, verificando autenticação...')
+                verificarAutenticacao()
+            } else {
+                console.error('Falha ao inicializar cliente Supabase')
+                document.getElementById('form-login').style.display = 'none'
+                document.querySelector('main').innerHTML += `
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <strong class="font-bold">Erro!</strong>
+                        <span class="block sm:inline"> Não foi possível conectar ao servidor. Por favor, tente novamente mais tarde.</span>
+                    </div>
+                `
+            }
+        })
+
+        // Configurações de segurança
+        const MAX_LOGIN_ATTEMPTS = 5
+        const LOCKOUT_TIME = 15 * 60 * 1000 // 15 minutos em milissegundos
+        let loginAttempts = 0
+        let lockoutUntil = 0
+
+        // Função para sanitizar inputs
+        function sanitizeInput(input) {
+            return input.replace(/[<>]/g, '')
+        }
+
+        // Função para validar força da senha
+        function validarForcaSenha(senha) {
+            const minLength = 8
+            const temMaiuscula = /[A-Z]/.test(senha)
+            const temMinuscula = /[a-z]/.test(senha)
+            const temNumero = /[0-9]/.test(senha)
+            const temEspecial = /[!@#$%^&*(),.?":{}|<>]/.test(senha)
+
+            const erros = []
+            if (senha.length < minLength) erros.push(`A senha deve ter pelo menos ${minLength} caracteres`)
+            if (!temMaiuscula) erros.push('A senha deve conter pelo menos uma letra maiúscula')
+            if (!temMinuscula) erros.push('A senha deve conter pelo menos uma letra minúscula')
+            if (!temNumero) erros.push('A senha deve conter pelo menos um número')
+            if (!temEspecial) erros.push('A senha deve conter pelo menos um caractere especial')
+
+            return {
+                valida: erros.length === 0,
+                erros
+            }
+        }
+
+        // Função para verificar bloqueio
+        function verificarBloqueio() {
+            const agora = Date.now()
+            if (agora < lockoutUntil) {
+                const minutosRestantes = Math.ceil((lockoutUntil - agora) / 60000)
+                throw new Error(`Muitas tentativas de login. Tente novamente em ${minutosRestantes} minutos.`)
+            }
+            if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+                lockoutUntil = agora + LOCKOUT_TIME
+                throw new Error(`Muitas tentativas de login. Tente novamente em ${LOCKOUT_TIME / 60000} minutos.`)
+            }
+        }
+
+        // Função para registrar tentativa de login
+        function registrarTentativaLogin(sucesso) {
+            if (sucesso) {
+                loginAttempts = 0
+                lockoutUntil = 0
+            } else {
+                loginAttempts++
+                if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+                    lockoutUntil = Date.now() + LOCKOUT_TIME
+                }
+            }
+        }
+
+        // Funções de loading
+        function mostrarLoading() {
+            document.getElementById('loading').classList.remove('hidden')
+        }
+
+        function esconderLoading() {
+            document.getElementById('loading').classList.add('hidden')
+        }
+
+        // Sistema de notificações
+        function mostrarNotificacao(mensagem, tipo = 'info') {
+            const notificacao = document.createElement('div')
+            notificacao.className = `fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full z-50 ${
+                tipo === 'sucesso' ? 'bg-green-100 text-green-800' :
+                tipo === 'erro' ? 'bg-red-100 text-red-800' :
+                'bg-blue-100 text-blue-800'
+            }`
+            notificacao.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${
+                        tipo === 'sucesso' ? 'fa-check-circle' :
+                        tipo === 'erro' ? 'fa-exclamation-circle' :
+                        'fa-info-circle'
+                    } mr-2"></i>
+                    <span>${sanitizeInput(mensagem)}</span>
+                </div>
+            `
+            document.body.appendChild(notificacao)
+            setTimeout(() => notificacao.classList.remove('translate-x-full'), 100)
+            setTimeout(() => {
+                notificacao.classList.add('translate-x-full')
+                setTimeout(() => notificacao.remove(), 300)
+            }, 3000)
+        }
+
+        // Verifica se o usuário já está autenticado
+        async function verificarAutenticacao() {
+            if (!supabase) {
+                console.error('Tentativa de verificar autenticação sem cliente Supabase')
+                return
+            }
+            
+            mostrarLoading()
+            try {
+                console.log('Verificando sessão atual...')
+                const { data: { session }, error } = await supabase.auth.getSession()
+                
+                if (error) {
+                    console.error('Erro ao verificar sessão:', error)
+                    throw error
+                }
+
+                if (session) {
+                    console.log('Sessão encontrada, redirecionando...')
+                    window.location.href = '/login/dashboard.html'
+                } else {
+                    console.log('Nenhuma sessão encontrada')
+                }
+            } catch (error) {
+                console.error('Erro ao verificar autenticação:', {
+                    mensagem: error.message,
+                    stack: error.stack,
+                    nome: error.name
+                })
+                mostrarNotificacao('Erro ao verificar autenticação', 'erro')
+            } finally {
+                esconderLoading()
+            }
+        }
+
+        // Função para fazer login
+        async function fazerLogin(event) {
+            event.preventDefault()
+            
+            if (!supabase) {
+                console.error('Tentativa de login sem cliente Supabase inicializado')
+                mostrarNotificacao('Sistema temporariamente indisponível. Por favor, tente novamente mais tarde.', 'erro')
+                return
+            }
+
+            mostrarLoading()
+            const mensagemErro = document.getElementById('mensagem-erro')
+            const mensagemSucesso = document.getElementById('mensagem-sucesso')
+
+            try {
+                console.log('Iniciando processo de login...')
+                
+                // Verifica bloqueio
+                verificarBloqueio()
+
+                // Sanitiza e valida inputs
+                const email = sanitizeInput(document.getElementById('email').value.trim())
+                const senha = document.getElementById('senha').value
+
+                console.log('Validando campos...')
+                // Validações básicas
+                if (!email || !senha) {
+                    throw new Error('Por favor, preencha todos os campos')
+                }
+
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    throw new Error('Email inválido')
+                }
+
+                console.log('Tentando autenticar...')
+                // Tenta fazer login
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password: senha
+                })
+
+                if (error) {
+                    console.error('Erro na autenticação:', {
+                        codigo: error.code,
+                        mensagem: error.message,
+                        status: error.status
+                    })
+                    registrarTentativaLogin(false)
+                    throw error
+                }
+
+                console.log('Login realizado com sucesso')
+                registrarTentativaLogin(true)
+                mensagemErro.classList.add('hidden')
+                mensagemSucesso.classList.remove('hidden')
+                mostrarNotificacao('Login realizado com sucesso', 'sucesso')
+
+                // Limpa os campos sensíveis
+                document.getElementById('senha').value = ''
+
+                // Redireciona após um pequeno delay
+                setTimeout(() => {
+                    window.location.href = '/login/dashboard.html'
+                }, 1000)
+            } catch (error) {
+                console.error('Erro detalhado no login:', {
+                    mensagem: error.message,
+                    stack: error.stack,
+                    nome: error.name
+                })
+                
+                let mensagemErroTexto = 'Erro ao fazer login'
+                
+                if (error.message === 'Invalid login credentials') {
+                    mensagemErroTexto = 'Email ou senha inválidos'
+                } else if (error.message.includes('tentativas de login')) {
+                    mensagemErroTexto = error.message
+                } else if (error.message.includes('Email inválido')) {
+                    mensagemErroTexto = error.message
+                } else if (error.message.includes('preencha todos os campos')) {
+                    mensagemErroTexto = error.message
+                }
+
+                mensagemErro.textContent = mensagemErroTexto
+                mensagemErro.classList.remove('hidden')
+                document.getElementById('mensagem-sucesso').classList.add('hidden')
+                mostrarNotificacao(mensagemErroTexto, 'erro')
+            } finally {
+                esconderLoading()
+            }
+        }
+
+        // Adiciona evento de submit ao formulário
+        document.getElementById('form-login').addEventListener('submit', fazerLogin)
+
+        // Adiciona proteção contra XSS nos inputs
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', (e) => {
+                e.target.value = sanitizeInput(e.target.value)
+            })
+        })
+    </script>
+</body>
+</html> 

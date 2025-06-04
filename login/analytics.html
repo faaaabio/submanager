@@ -174,19 +174,8 @@
                                         <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Valor</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    <tr>
-                                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">01/06/2024</td>
-                                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">Globoplay</td>
-                                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">Canais ao Vivo</td>
-                                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">R$ 12,90</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">01/06/2024</td>
-                                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">YouTube Premium</td>
-                                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">Vídeos</td>
-                                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">R$ 12,90</td>
-                                    </tr>
+                                <tbody id="historicoGastos" class="bg-white divide-y divide-gray-200">
+                                    <!-- Os dados serão inseridos aqui via JavaScript -->
                                 </tbody>
                             </table>
                         </div>
@@ -283,8 +272,31 @@
                     .from('assinaturas')
                     .select('*')
                     .eq('user_id', user.id)
+                    .order('data_inicio', { ascending: false })
 
                 if (error) throw error
+
+                // Atualiza a tabela de histórico
+                const tbody = document.getElementById('historicoGastos')
+                tbody.innerHTML = '' // Limpa a tabela
+
+                assinaturas.forEach(assinatura => {
+                    const data = new Date(assinatura.data_inicio)
+                    const dataFormatada = data.toLocaleDateString('pt-BR')
+                    const valorFormatado = assinatura.valor.toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    })
+
+                    const tr = document.createElement('tr')
+                    tr.innerHTML = `
+                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">${dataFormatada}</td>
+                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">${assinatura.nome}</td>
+                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">${assinatura.categoria}</td>
+                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">${valorFormatado}</td>
+                    `
+                    tbody.appendChild(tr)
+                })
 
                 // Atualiza o gráfico de gastos por categoria
                 const gastosPorCategoria = {}

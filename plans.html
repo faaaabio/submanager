@@ -12,21 +12,21 @@
 </head>
 <body class="min-h-screen flex flex-col bg-gray-50">
     <!-- Navbar -->
-    <nav class="bg-white shadow">
+    <nav class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
-                <div class="flex">
+                <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
                     <div class="flex-shrink-0 flex items-center">
-                        <a href="/" class="text-2xl font-bold text-indigo-600">AssineFácil</a>
+                        <a href="/dashboard.html">
+                            <span class="text-2xl font-bold text-indigo-600">AssineFácil</span>
+                        </a>
                     </div>
                 </div>
                 <div class="flex items-center">
-                    <a href="/login.html" class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
-                        Login
-                    </a>
-                    <a href="/" class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-sm font-medium">
-                        Começar Agora
-                    </a>
+                    <button onclick="logout()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-sign-out-alt mr-1"></i>
+                        Sair
+                    </button>
                 </div>
             </div>
         </div>
@@ -62,7 +62,7 @@
                                     <i class="fas fa-check text-green-500"></i>
                                 </div>
                                 <p class="ml-3 text-sm text-gray-500">
-                                    Até 5 assinaturas
+                                    Até 2 assinaturas
                                 </p>
                             </li>
                             <li class="flex items-start">
@@ -107,7 +107,7 @@
                                     <i class="fas fa-check text-green-500"></i>
                                 </div>
                                 <p class="ml-3 text-sm text-gray-500">
-                                    Assinaturas ilimitadas
+                                    Até 4 assinaturas
                                 </p>
                             </li>
                             <li class="flex items-start">
@@ -222,38 +222,88 @@
     </footer>
 
     <script>
-        // Carrega os planos do banco de dados
-        async function loadPlans() {
-            const supabase = initSupabase();
-            const { data: plans, error } = await supabase
-                .from('plans')
-                .select('*')
-                .order('price', { ascending: true });
-
-            if (error) {
-                console.error('Erro ao carregar planos:', error);
-                return;
-            }
-
-            // Atualiza os preços e descrições dos planos
-            plans.forEach(plan => {
-                const planElement = document.querySelector(`[data-plan-id="${plan.id}"]`);
-                if (planElement) {
-                    const priceElement = planElement.querySelector('.text-4xl');
-                    const descriptionElement = planElement.querySelector('.text-sm.text-gray-500');
-                    
-                    if (priceElement) {
-                        priceElement.textContent = `R$${plan.price.toFixed(2)}`;
-                    }
-                    if (descriptionElement) {
-                        descriptionElement.textContent = plan.description;
-                    }
+        document.addEventListener('DOMContentLoaded', async function () {
+            try {
+                // Verifica se o Supabase está inicializado
+                if (!window.supabase) {
+                    throw new Error('Supabase não inicializado');
                 }
-            });
-        }
 
-        // Carrega os planos quando a página carregar
-        window.addEventListener('load', loadPlans);
+                const { data: plans, error } = await window.supabase
+                    .from('plans')
+                    .select('*')
+                    .order('price');
+
+                if (error) {
+                    console.error('Erro do Supabase:', error);
+                    throw error;
+                }
+
+                if (!plans || plans.length === 0) {
+                    throw new Error('Nenhum plano encontrado');
+                }
+
+                const plansContainer = document.getElementById('plans-container');
+                if (!plansContainer) {
+                    throw new Error('Container de planos não encontrado');
+                }
+
+                plansContainer.innerHTML = ''; // Limpa o container
+
+                plans.forEach(plan => {
+                    const planElement = `
+                        <div class="border border-gray-200 rounded-lg shadow-sm divide-y divide-gray-200">
+                            <div class="p-6">
+                                <h2 class="text-2xl font-semibold text-gray-900">${plan.name}</h2>
+                                <p class="mt-4 text-gray-500">${plan.description}</p>
+                                <p class="mt-8">
+                                    <span class="text-4xl font-extrabold text-gray-900">R$${plan.price.toFixed(2)}</span>
+                                    <span class="text-base font-medium text-gray-500">/mês</span>
+                                </p>
+                                <a href="/payment.html?planid=${plan.id}"
+                                    class="mt-8 block w-full bg-indigo-600 border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-indigo-700">
+                                    Assinar agora
+                                </a>
+                            </div>
+                            <div class="pt-6 pb-8 px-6">
+                                <h3 class="text-xs font-medium text-gray-900 tracking-wide uppercase">O que está incluído</h3>
+                                <ul role="list" class="mt-6 space-y-4">
+                                    ${plan.features ? plan.features.map(feature => `
+                                        <li class="flex space-x-3">
+                                            <svg class="flex-shrink-0 h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">${feature}</span>
+                                        </li>
+                                    `).join('') : ''}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    plansContainer.innerHTML += planElement;
+                });
+
+            } catch (error) {
+                console.error('Erro ao carregar planos:', error);
+                const plansContainer = document.getElementById('plans-container');
+                if (plansContainer) {
+                    plansContainer.innerHTML = `
+                        <div class="text-center py-12">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">Erro ao carregar planos</h3>
+                            <p class="mt-1 text-sm text-gray-500">Por favor, tente novamente mais tarde.</p>
+                            <div class="mt-6">
+                                <button onclick="window.location.reload()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Tentar novamente
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        });
     </script>
 </body>
 </html> 

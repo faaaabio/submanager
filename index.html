@@ -50,225 +50,236 @@
                 <div class="flex">
                     <div class="flex-shrink-0 flex items-center">
                         <a href="/" class="flex items-center">
-                            <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
-                            <span class="text-2xl text-indigo-600">AssineFácil</span>
+                            <span class="text-2xl font-bold text-indigo-600">AssineFácil</span>
                         </a>
                     </div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <a href="/login.html" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-sign-in-alt mr-1"></i>
+                <div class="flex items-center">
+                    <a href="/login.html"
+                        class="text-base font-medium text-gray-500 hover:text-gray-900">
                         Entrar
-                    </a>
-                    <a href="/register.html" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-user-plus mr-1"></i>
-                        Criar Conta
                     </a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="flex-grow">
-        <!-- Hero Section -->
-        <div class="bg-white">
-            <div class="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
-                <div class="text-center">
-                    <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
-                        Gerencie suas assinaturas com facilidade
-                    </h1>
-                    <p class="mt-5 max-w-xl mx-auto text-xl text-gray-500">
-                        Organize, acompanhe e economize com suas assinaturas em um só lugar.
-                    </p>
-                    <div class="mt-8 flex justify-center">
-                        <div class="inline-flex rounded-md shadow">
-                            <a href="/register.html" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                                Começar Agora
-                                <i class="fas fa-arrow-right ml-2"></i>
-                            </a>
+    <!-- Hero Section -->
+    <div class="relative bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
+                <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
+                    <div class="text-center">
+                        <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+                            <span class="block xl:inline">Gerencie suas</span>
+                            <span class="block text-indigo-600 xl:inline">assinaturas</span>
+                        </h1>
+                        <p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl">
+                            Organize, acompanhe e economize com suas assinaturas em um só lugar.
+                        </p>
+                        <div class="mt-5 sm:mt-8 sm:flex sm:justify-center">
+                            <div class="rounded-md shadow">
+                                <a href="/plans.html"
+                                    class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
+                                    Ver planos
+                                </a>
+                            </div>
+                            <div class="mt-3 sm:mt-0 sm:ml-3">
+                                <a href="/login.html"
+                                    class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 md:py-4 md:text-lg md:px-10">
+                                    Entrar
+                                </a>
+                            </div>
                         </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção de Preços -->
+    <div class="bg-white py-16 sm:py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                    Planos que cabem no seu bolso
+                </h2>
+                <p class="mt-4 text-lg text-gray-500">
+                    Escolha o plano ideal para suas necessidades
+                </p>
+            </div>
+
+            <div class="mt-12 space-y-4 sm:mt-16 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:max-w-4xl lg:mx-auto xl:max-w-none xl:grid-cols-3">
+                <!-- Plano Básico -->
+                <div class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex flex-col" data-plan-id="081eecee-01f5-4f79-9548-136cf83598b2">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-medium text-gray-900">Básico</h3>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Ideal para começar a organizar suas assinaturas
+                        </p>
+                        <p class="mt-4">
+                            <span class="text-4xl font-extrabold text-gray-900">R$25,80</span>
+                            <span class="text-base font-medium text-gray-500">/mês</span>
+                        </p>
+                        <ul class="mt-6 space-y-4">
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check text-green-500"></i>
+                                </div>
+                                <p class="ml-3 text-sm text-gray-500">
+                                    Até 2 assinaturas
+                                </p>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check text-green-500"></i>
+                                </div>
+                                <p class="ml-3 text-sm text-gray-500">
+                                    Notificações básicas
+                                </p>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check text-green-500"></i>
+                                </div>
+                                <p class="ml-3 text-sm text-gray-500">
+                                    Relatórios mensais
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-6">
+                        <a href="/plans.html" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Ver planos
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Plano Pro -->
+                <div class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex flex-col" data-plan-id="1626e4cf-4076-420f-a2a0-f5ab1c5fcb7d">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-medium text-gray-900">Pro</h3>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Para quem tem várias assinaturas
+                        </p>
+                        <p class="mt-4">
+                            <span class="text-4xl font-extrabold text-gray-900">R$49,90</span>
+                            <span class="text-base font-medium text-gray-500">/mês</span>
+                        </p>
+                        <ul class="mt-6 space-y-4">
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check text-green-500"></i>
+                                </div>
+                                <p class="ml-3 text-sm text-gray-500">
+                                    Até 4 assinaturas
+                                </p>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check text-green-500"></i>
+                                </div>
+                                <p class="ml-3 text-sm text-gray-500">
+                                    Notificações avançadas
+                                </p>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check text-green-500"></i>
+                                </div>
+                                <p class="ml-3 text-sm text-gray-500">
+                                    Relatórios detalhados
+                                </p>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check text-green-500"></i>
+                                </div>
+                                <p class="ml-3 text-sm text-gray-500">
+                                    Suporte prioritário
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-6">
+                        <a href="/plans.html" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Ver planos
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Plano Business -->
+                <div class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex flex-col" data-plan-id="f2d24b83-0689-4a75-ab8b-be8b773738b5">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-medium text-gray-900">Business</h3>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Para empresas e equipes
+                        </p>
+                        <p class="mt-4">
+                            <span class="text-4xl font-extrabold text-gray-900">R$99,90</span>
+                            <span class="text-base font-medium text-gray-500">/mês</span>
+                        </p>
+                        <ul class="mt-6 space-y-4">
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check text-green-500"></i>
+                                </div>
+                                <p class="ml-3 text-sm text-gray-500">
+                                    Tudo do plano Pro
+                                </p>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check text-green-500"></i>
+                                </div>
+                                <p class="ml-3 text-sm text-gray-500">
+                                    Múltiplos usuários
+                                </p>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check text-green-500"></i>
+                                </div>
+                                <p class="ml-3 text-sm text-gray-500">
+                                    API de integração
+                                </p>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check text-green-500"></i>
+                                </div>
+                                <p class="ml-3 text-sm text-gray-500">
+                                    Suporte 24/7
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-6">
+                        <a href="/plans.html" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Ver planos
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Features Section -->
-        <div class="py-12 bg-gray-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="lg:text-center">
-                    <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">Recursos</h2>
-                    <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                        Tudo que você precisa para gerenciar suas assinaturas
-                    </p>
-                </div>
-
-                <div class="mt-10">
-                    <div class="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
-                        <div class="relative">
-                            <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                                <i class="fas fa-bell text-xl"></i>
-                            </div>
-                            <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Notificações</p>
-                            <p class="mt-2 ml-16 text-base text-gray-500">
-                                Receba lembretes antes do vencimento das suas assinaturas.
-                            </p>
-                        </div>
-
-                        <div class="relative">
-                            <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                                <i class="fas fa-chart-line text-xl"></i>
-                            </div>
-                            <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Análises</p>
-                            <p class="mt-2 ml-16 text-base text-gray-500">
-                                Acompanhe seus gastos e identifique oportunidades de economia.
-                            </p>
-                        </div>
-
-                        <div class="relative">
-                            <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                                <i class="fas fa-sync text-xl"></i>
-                            </div>
-                            <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Renovações</p>
-                            <p class="mt-2 ml-16 text-base text-gray-500">
-                                Gerencie facilmente as renovações das suas assinaturas.
-                            </p>
-                        </div>
-
-                        <div class="relative">
-                            <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                                <i class="fas fa-shield-alt text-xl"></i>
-                            </div>
-                            <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Segurança</p>
-                            <p class="mt-2 ml-16 text-base text-gray-500">
-                                Suas informações protegidas com a mais alta segurança.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Seção CTA -->
+    <div class="bg-indigo-700">
+        <div class="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
+                <span class="block">Pronto para começar?</span>
+                <span class="block">Escolha seu plano agora.</span>
+            </h2>
+            <p class="mt-4 text-lg leading-6 text-indigo-200">
+                Comece a gerenciar suas assinaturas hoje mesmo.
+            </p>
+            <a href="/plans.html"
+                class="mt-8 w-full inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 sm:w-auto">
+                Ver planos
+            </a>
         </div>
-
-        <!-- Pricing Section -->
-        <div class="bg-white py-12">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="sm:text-center">
-                    <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-                        Planos para todos os perfis
-                    </h2>
-                    <p class="mt-4 text-lg text-gray-500">
-                        Escolha o plano que melhor se adapta às suas necessidades.
-                    </p>
-                </div>
-
-                <div class="mt-12 space-y-4 sm:mt-16 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:max-w-4xl lg:mx-auto xl:max-w-none xl:grid-cols-3">
-                    <!-- Plano Básico -->
-                    <div class="border border-gray-200 rounded-lg shadow-sm divide-y divide-gray-200">
-                        <div class="p-6">
-                            <h2 class="text-lg leading-6 font-medium text-gray-900">Básico</h2>
-                            <p class="mt-4 text-sm text-gray-500">Perfeito para começar a organizar suas assinaturas.</p>
-                            <p class="mt-8">
-                                <span class="text-4xl font-extrabold text-gray-900">R$0</span>
-                                <span class="text-base font-medium text-gray-500">/mês</span>
-                            </p>
-                            <a href="/register.html?planid=Básico" class="mt-8 block w-full bg-indigo-600 border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-indigo-700">
-                                Começar agora
-                            </a>
-                        </div>
-                        <div class="pt-6 pb-8 px-6">
-                            <h3 class="text-xs font-medium text-gray-900 tracking-wide uppercase">O que está incluído</h3>
-                            <ul class="mt-6 space-y-4">
-                                <li class="flex space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-sm text-gray-500">Até 5 assinaturas</span>
-                                </li>
-                                <li class="flex space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-sm text-gray-500">Notificações básicas</span>
-                                </li>
-                                <li class="flex space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-sm text-gray-500">Relatórios mensais</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Plano Pro -->
-                    <div class="border border-gray-200 rounded-lg shadow-sm divide-y divide-gray-200">
-                        <div class="p-6">
-                            <h2 class="text-lg leading-6 font-medium text-gray-900">Pro</h2>
-                            <p class="mt-4 text-sm text-gray-500">Para quem precisa de mais recursos e controle.</p>
-                            <p class="mt-8">
-                                <span class="text-4xl font-extrabold text-gray-900">R$9,90</span>
-                                <span class="text-base font-medium text-gray-500">/mês</span>
-                            </p>
-                            <a href="/register.html?planid=Pro" class="mt-8 block w-full bg-indigo-600 border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-indigo-700">
-                                Começar agora
-                            </a>
-                        </div>
-                        <div class="pt-6 pb-8 px-6">
-                            <h3 class="text-xs font-medium text-gray-900 tracking-wide uppercase">O que está incluído</h3>
-                            <ul class="mt-6 space-y-4">
-                                <li class="flex space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-sm text-gray-500">Assinaturas ilimitadas</span>
-                                </li>
-                                <li class="flex space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-sm text-gray-500">Notificações avançadas</span>
-                                </li>
-                                <li class="flex space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-sm text-gray-500">Relatórios detalhados</span>
-                                </li>
-                                <li class="flex space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-sm text-gray-500">Suporte prioritário</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Plano Business -->
-                    <div class="border border-gray-200 rounded-lg shadow-sm divide-y divide-gray-200">
-                        <div class="p-6">
-                            <h2 class="text-lg leading-6 font-medium text-gray-900">Business</h2>
-                            <p class="mt-4 text-sm text-gray-500">Para empresas que precisam gerenciar múltiplas assinaturas.</p>
-                            <p class="mt-8">
-                                <span class="text-4xl font-extrabold text-gray-900">R$29,90</span>
-                                <span class="text-base font-medium text-gray-500">/mês</span>
-                            </p>
-                            <a href="/register.html?planid=Business" class="mt-8 block w-full bg-indigo-600 border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-indigo-700">
-                                Começar agora
-                            </a>
-                        </div>
-                        <div class="pt-6 pb-8 px-6">
-                            <h3 class="text-xs font-medium text-gray-900 tracking-wide uppercase">O que está incluído</h3>
-                            <ul class="mt-6 space-y-4">
-                                <li class="flex space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-sm text-gray-500">Tudo do plano Pro</span>
-                                </li>
-                                <li class="flex space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-sm text-gray-500">Múltiplos usuários</span>
-                                </li>
-                                <li class="flex space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-sm text-gray-500">API de integração</span>
-                                </li>
-                                <li class="flex space-x-3">
-                                    <i class="fas fa-check text-green-500"></i>
-                                    <span class="text-sm text-gray-500">Suporte 24/7</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-white">
@@ -291,5 +302,77 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            try {
+                // Verifica se o Supabase está inicializado
+                if (!window.supabase) {
+                    throw new Error('Supabase não inicializado');
+                }
+
+                const { data: plans, error } = await window.supabase
+                    .from('plans')
+                    .select('*')
+                    .order('price');
+
+                if (error) {
+                    console.error('Erro do Supabase:', error);
+                    throw error;
+                }
+
+                if (!plans || plans.length === 0) {
+                    throw new Error('Nenhum plano encontrado');
+                }
+
+                const plansContainer = document.getElementById('plans-container');
+                if (!plansContainer) {
+                    throw new Error('Container de planos não encontrado');
+                }
+
+                plansContainer.innerHTML = ''; // Limpa o container
+
+                plans.forEach(plan => {
+                    const planElement = `
+                        <div class="border border-gray-200 rounded-lg shadow-sm divide-y divide-gray-200">
+                            <div class="p-6">
+                                <h2 class="text-2xl font-semibold text-gray-900">${plan.name}</h2>
+                                <p class="mt-4 text-gray-500">${plan.description}</p>
+                                <p class="mt-8">
+                                    <span class="text-4xl font-extrabold text-gray-900">R$${plan.price.toFixed(2)}</span>
+                                    <span class="text-base font-medium text-gray-500">/mês</span>
+                                </p>
+                                <a href="/plans.html"
+                                    class="mt-8 block w-full bg-indigo-600 border border-transparent rounded-md py-2 text-sm font-semibold text-white text-center hover:bg-indigo-700">
+                                    Ver planos
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    plansContainer.innerHTML += planElement;
+                });
+
+            } catch (error) {
+                console.error('Erro ao carregar planos:', error);
+                const plansContainer = document.getElementById('plans-container');
+                if (plansContainer) {
+                    plansContainer.innerHTML = `
+                        <div class="text-center py-12">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">Erro ao carregar planos</h3>
+                            <p class="mt-1 text-sm text-gray-500">Por favor, tente novamente mais tarde.</p>
+                            <div class="mt-6">
+                                <button onclick="window.location.reload()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Tentar novamente
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        });
+    </script>
 </body>
 </html> 

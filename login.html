@@ -75,11 +75,10 @@
     <nav class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
-                <div class="flex">
+                <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
                     <div class="flex-shrink-0 flex items-center">
                         <a href="/" class="flex items-center">
-                            <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
-                            <span class="text-2xl text-indigo-600">AssineFácil</span>
+                            <span class="text-2xl font-bold text-indigo-600">AssineFácil</span>
                         </a>
                     </div>
                 </div>
@@ -123,22 +122,6 @@
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <input id="remember-me" name="remember-me" type="checkbox"
-                            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                        <label for="remember-me" class="ml-2 block text-sm text-gray-900">
-                            Lembrar-me
-                        </label>
-                    </div>
-
-                    <div class="text-sm">
-                        <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
-                            Esqueceu sua senha?
-                        </a>
-                    </div>
-                </div>
-
                 <div>
                     <button type="submit"
                         class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
@@ -149,37 +132,6 @@
                     </button>
                 </div>
             </form>
-
-            <div class="mt-6">
-                <div class="relative">
-                    <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-gray-300"></div>
-                    </div>
-                    <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-gray-50 text-gray-500">
-                            Ou continue com
-                        </span>
-                    </div>
-                </div>
-
-                <div class="mt-6 grid grid-cols-2 gap-3">
-                    <div>
-                        <a href="#"
-                            class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                            <i class="fab fa-google text-red-600"></i>
-                            <span class="ml-2">Google</span>
-                        </a>
-                    </div>
-
-                    <div>
-                        <a href="#"
-                            class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                            <i class="fab fa-facebook text-blue-600"></i>
-                            <span class="ml-2">Facebook</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
         </div>
     </main>
 
@@ -212,7 +164,6 @@
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const rememberMe = document.getElementById('remember-me').checked;
 
             try {
                 const supabase = initSupabase();

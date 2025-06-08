@@ -32,12 +32,62 @@
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <script>
-        // Verifica se o usuário está autenticado
-        window.onload = async () => {
-            const isAuthenticated = await checkAuth();
-            if (!isAuthenticated) {
-                window.location.href = '/login.html';
-            }
+        // Função para formatar valor em reais
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(value);
+        }
+
+        // Função para gerar QR Code do PIX
+        function generatePixQRCode() {
+            const pixKey = 'assinefacil@email.com'; // Chave PIX da empresa
+            const amount = document.getElementById('amount').textContent;
+            const description = 'AssineFácil - Assinatura';
+            
+            // Formata o valor para o padrão PIX (sem R$ e com . ao invés de ,)
+            const formattedAmount = amount.replace('R$', '').replace(',', '.');
+            
+            // Gera o payload do PIX
+            const pixPayload = `00020126580014BR.GOV.BCB.PIX0136${pixKey}520400005303986540${formattedAmount}5802BR5913AssineFácil6008BRASILIA62070503***6304E2CA`;
+            
+            // Gera o QR Code
+            const qrCode = new QRCode(document.getElementById('qrcode'), {
+                text: pixPayload,
+                width: 200,
+                height: 200
+            });
+        }
+
+        // Função para copiar o código PIX
+        function copyPixCode() {
+            const pixKey = 'assinefacil@email.com';
+            navigator.clipboard.writeText(pixKey).then(() => {
+                alert('Chave PIX copiada com sucesso!');
+            });
+        }
+
+        // Função para verificar o pagamento
+        function checkPayment() {
+            // Aqui você implementaria a verificação real do pagamento
+            alert('Verificando pagamento...');
+        }
+
+        // Inicializa a página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gera o QR Code do PIX
+            generatePixQRCode();
+
+            // Adiciona eventos aos botões
+            document.getElementById('copyPixBtn').addEventListener('click', copyPixCode);
+            document.getElementById('checkPaymentBtn').addEventListener('click', checkPayment);
+        });
+
+        const planPrices = {
+            '081eecee-01f5-4f79-9548-136cf83598b2': 9.90, // Básico
+            '1626e4cf-4076-420f-a2a0-f5ab1c5fcb7d': 19.90, // Pro
+            '3a7b8c9d-0e1f-2g3h-4i5j-6k7l8m9n0o1p': 49.90 // Business
         };
     </script>
 
@@ -45,15 +95,16 @@
     <nav class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
-                <div class="flex">
-                    <div class="flex-shrink-0 flex items-center">
-                        <a href="/dashboard.html" class="flex items-center">
-                            <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
-                            <span class="text-2xl text-indigo-600">AssineFácil</span>
-                        </a>
+                <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+                    <div class="flex">
+                        <div class="flex-shrink-0 flex items-center">
+                            <a href="/" class="flex items-center">
+                                <span class="text-2xl font-bold text-indigo-600">AssineFácil</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center">
                     <button onclick="logout()" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-sign-out-alt mr-1"></i>
                         Sair
@@ -75,7 +126,7 @@
                 <div class="mb-6">
                     <h3 class="text-lg font-semibold text-gray-800 mb-2">Escaneie o QR Code abaixo para pagar com PIX:</h3>
                     <div id="pix-qr-container" class="flex justify-center mb-4">
-                        <canvas id="pix-qr" width="200" height="200"></canvas>
+                        <img src="/images/pix.jpeg" alt="QR Code PIX" class="w-48 h-48 object-contain">
                     </div>
                     <div class="flex items-center space-x-2">
                         <input type="text" id="pix-code" class="w-full px-3 py-2 border rounded text-gray-700" readonly>
@@ -125,6 +176,7 @@
             const pixInput = document.getElementById('pix-code');
             pixInput.select();
             document.execCommand('copy');
+            alert('Chave PIX copiada com sucesso!');
         }
 
         async function loadPixPayment() {
@@ -149,7 +201,6 @@
             document.getElementById('plan-desc').textContent = plan.description;
             document.getElementById('plan-price').textContent = `R$${plan.price.toFixed(2)}`;
             document.getElementById('pix-code').value = plan.pix_code;
-            QRCode.toCanvas(document.getElementById('pix-qr'), plan.pix_code, { width: 200 });
             checkPixPayment(planId);
         }
 

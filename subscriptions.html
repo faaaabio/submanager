@@ -24,6 +24,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/config.js"></script>
     <style>
         .loading {
             position: fixed;
@@ -58,322 +59,260 @@
             font-weight: 400;
         }
     </style>
-    <script>
-        // Configuração do Supabase
-        const supabaseUrl = 'https://slnyyxutbgpbqcfzjyxi.supabase.co'
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsbnl5eHV0YmdwYnFjZnpqeXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4MjI5NDgsImV4cCI6MjA2NDM5ODk0OH0.4C0wHwQih8NDWKVIAzoByZRe5HXQPlcvCwUgwTrqq0s'
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
-
-        // Funções de loading
-        function mostrarLoading() {
-            document.getElementById('loading').classList.remove('hidden')
-        }
-
-        function esconderLoading() {
-            document.getElementById('loading').classList.add('hidden')
-        }
-
-        // Sistema de notificações
-        function mostrarNotificacao(mensagem, tipo = 'info') {
-            const notificacao = document.createElement('div')
-            notificacao.className = `fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full z-50 ${
-                tipo === 'sucesso' ? 'bg-green-100 text-green-800' :
-                tipo === 'erro' ? 'bg-red-100 text-red-800' :
-                'bg-blue-100 text-blue-800'
-            }`
-            notificacao.innerHTML = `
-                <div class="flex items-center">
-                    <i class="fas ${
-                        tipo === 'sucesso' ? 'fa-check-circle' :
-                        tipo === 'erro' ? 'fa-exclamation-circle' :
-                        'fa-info-circle'
-                    } mr-2"></i>
-                    <span>${mensagem}</span>
-                </div>
-            `
-            document.body.appendChild(notificacao)
-            setTimeout(() => notificacao.classList.remove('translate-x-full'), 100)
-            setTimeout(() => {
-                notificacao.classList.add('translate-x-full')
-                setTimeout(() => notificacao.remove(), 300)
-            }, 3000)
-        }
-
-        // Verifica se o usuário está autenticado
-        async function verificarAutenticacao() {
-            mostrarLoading()
-            try {
-                console.log('Iniciando verificação de autenticação...')
-                const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-                
-                if (sessionError) {
-                    console.error('Erro ao obter sessão:', sessionError)
-                    throw new Error(`Erro de autenticação: ${sessionError.message}`)
-                }
-                
-                if (!session) {
-                    console.log('Nenhuma sessão encontrada, redirecionando para login...')
-                    mostrarNotificacao('Por favor, faça login para continuar', 'erro')
-                    window.location.href = '/login.html'
-                    return
-                }
-
-                console.log('Sessão encontrada, obtendo dados do usuário...')
-                const { data: { user }, error: userError } = await supabase.auth.getUser()
-                
-                if (userError) {
-                    console.error('Erro ao obter dados do usuário:', userError)
-                    throw new Error(`Erro ao obter dados do usuário: ${userError.message}`)
-                }
-
-                if (user) {
-                    console.log('Dados do usuário obtidos com sucesso')
-                    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.user_metadata?.full_name || user.email)}&background=6366f1&color=fff`
-                    document.querySelectorAll('.user-avatar').forEach(img => {
-                        img.src = avatarUrl
-                    })
-                    document.querySelectorAll('.user-name').forEach(span => {
-                        span.textContent = user.user_metadata?.full_name || user.email
-                    })
-                }
-
-                // Carrega as assinaturas
-                await carregarAssinaturas()
-            } catch (error) {
-                console.error('Erro detalhado na verificação de autenticação:', error)
-                mostrarNotificacao(`Erro ao carregar dados: ${error.message}`, 'erro')
-            } finally {
-                esconderLoading()
-            }
-        }
-
-        // Função para carregar assinaturas
-        async function carregarAssinaturas() {
-            mostrarLoading()
-            try {
-                console.log('Iniciando carregamento das assinaturas...')
-                const { data: assinaturas, error: assinaturasError } = await supabase
-                    .from('assinaturas')
-                    .select('*')
-                    .order('created_at', { ascending: false })
-
-                if (assinaturasError) {
-                    console.error('Erro ao carregar assinaturas:', assinaturasError)
-                    throw new Error(`Erro ao carregar assinaturas: ${assinaturasError.message}`)
-                }
-
-                console.log('Assinaturas carregadas com sucesso:', assinaturas)
-
-                const tbody = document.querySelector('tbody')
-                tbody.innerHTML = ''
-
-                if (assinaturas.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="5" class="px-3 sm:px-6 py-3 sm:py-4 text-center text-gray-500">
-                                Nenhuma assinatura encontrada
-                            </td>
-                        </tr>
-                    `
-                    return
-                }
-
-                assinaturas.forEach(assinatura => {
-                    const tr = document.createElement('tr')
-                    tr.className = 'fade-in'
-                    tr.innerHTML = `
-                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-${assinatura.cor || 'blue'}-100 flex items-center justify-center">
-                                    <i class="fas ${assinatura.icone || 'fa-tv'} text-${assinatura.cor || 'blue'}-600 text-sm sm:text-xl"></i>
-                                </div>
-                                <div class="ml-2 sm:ml-4">
-                                    <div class="text-xs sm:text-sm font-medium text-gray-900">${assinatura.nome}</div>
-                                    <div class="text-xs text-gray-500">${assinatura.plano}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
-                            <div class="text-xs sm:text-sm text-gray-900">${assinatura.categoria}</div>
-                        </td>
-                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
-                            <div class="text-xs sm:text-sm text-gray-900">R$ ${assinatura.valor.toFixed(2)}</div>
-                            <div class="text-xs text-gray-500">${assinatura.periodicidade}</div>
-                        </td>
-                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
-                            <span class="px-2 py-1 text-xs font-medium text-${assinatura.status === 'Ativo' ? 'green' : 'red'}-800 bg-${assinatura.status === 'Ativo' ? 'green' : 'red'}-100 rounded-full">
-                                ${assinatura.status}
-                            </span>
-                        </td>
-                        <td class="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-xs sm:text-sm font-medium">
-                            <button onclick="cancelarAssinatura('${assinatura.id}')" class="text-yellow-600 hover:text-yellow-900 transition-colors duration-200 px-3 py-1 rounded border border-yellow-200 bg-yellow-50 hover:bg-yellow-100">
-                                <i class="fas fa-ban mr-1"></i> Cancelar
-                            </button>
-                        </td>
-                    `
-                    tbody.appendChild(tr)
-                })
-            } catch (error) {
-                console.error('Erro ao carregar assinaturas:', error.message)
-                mostrarNotificacao('Erro ao carregar assinaturas', 'erro')
-            } finally {
-                esconderLoading()
-            }
-        }
-
-        // Função para fazer logout
-        async function fazerLogout() {
-            mostrarLoading()
-            try {
-                const { error } = await supabase.auth.signOut()
-                if (error) throw error
-                mostrarNotificacao('Logout realizado com sucesso', 'sucesso')
-                window.location.href = '/login.html'
-            } catch (error) {
-                console.error('Erro ao fazer logout:', error.message)
-                mostrarNotificacao('Erro ao fazer logout', 'erro')
-            } finally {
-                esconderLoading()
-            }
-        }
-
-        // Função para cancelar assinatura
-        async function cancelarAssinatura(id) {
-            if (!confirm('Tem certeza que deseja cancelar esta assinatura?')) return
-            mostrarLoading()
-            try {
-                const { error } = await supabase
-                    .from('assinaturas')
-                    .update({ status: 'Cancelada' })
-                    .eq('id', id)
-                if (error) throw error
-                mostrarNotificacao('Assinatura cancelada com sucesso', 'sucesso')
-                await carregarAssinaturas()
-            } catch (error) {
-                console.error('Erro ao cancelar assinatura:', error.message)
-                mostrarNotificacao('Erro ao cancelar assinatura', 'erro')
-            } finally {
-                esconderLoading()
-            }
-        }
-
-        // Função para controlar o menu mobile
-        function toggleMobileMenu() {
-            const sidebar = document.getElementById('sidebar')
-            const overlay = document.getElementById('overlay')
-            sidebar.classList.toggle('-translate-x-full')
-            overlay.classList.toggle('hidden')
-        }
-
-        // Verifica autenticação ao carregar a página
-        window.onload = verificarAutenticacao
-    </script>
 </head>
 <body class="bg-gray-50">
-    <!-- Loading -->
-    <div id="loading" class="loading">
-        <div class="loading-spinner"></div>
-    </div>
-
-    <!-- Overlay para mobile -->
-    <div id="overlay" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden lg:hidden z-20" onclick="toggleMobileMenu()"></div>
-
-    <!-- Sidebar -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-30">
-        <div class="flex items-center justify-between h-16 px-4 border-b">
-            <a href="/dashboard.html" class="flex items-center">
-                <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
-                <span class="text-2xl text-indigo-600">AssineFácil</span>
-            </a>
-            <button class="lg:hidden text-gray-500 hover:text-gray-600" onclick="toggleMobileMenu()">
-                <i class="fas fa-times text-lg sm:text-xl"></i>
-            </button>
-        </div>
-        <nav class="mt-4 sm:mt-6">
-            <div class="px-2 sm:px-4 space-y-1 sm:space-y-2">
-                <a href="/dashboard.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-home w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
-                    Dashboard
-                </a>
-                <a href="/subscriptions.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-700 bg-indigo-50 rounded-md">
-                    <i class="fas fa-credit-card w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-indigo-600"></i>
-                    Assinaturas
-                </a>
-                <a href="/analytics.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-chart-bar w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
-                    Análises
-                </a>
-                <a href="/settings.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-cog w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
-                    Configurações
-                </a>
-            </div>
-        </nav>
-    </div>
-
-    <!-- Main Content -->
-    <div class="lg:ml-64">
-        <!-- Top Navigation -->
+    <div class="min-h-screen">
+        <!-- Navbar -->
         <nav class="bg-white shadow-sm">
-            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-14 sm:h-16">
-                    <div class="flex items-center">
-                        <button class="lg:hidden text-gray-500 hover:text-gray-600 mr-2 sm:mr-4" onclick="toggleMobileMenu()">
-                            <i class="fas fa-bars text-lg sm:text-xl"></i>
-                        </button>
-                        <h1 class="text-xl text-gray-900">Assinaturas</h1>
-                    </div>
-                    <div class="flex items-center space-x-2 sm:space-x-4">
-                        <button onclick="window.open('/index.html', '_blank')" class="bg-indigo-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            <i class="fas fa-plus mr-1 sm:mr-2"></i>
-                            Nova Assinatura
-                        </button>
-                        <div class="relative flex items-center space-x-2 sm:space-x-4">
-                            <img class="h-8 w-8 rounded-full user-avatar" src="https://ui-avatars.com/api/?name=Usuario&background=6366f1&color=fff" alt="Avatar">
-                            <span class="hidden sm:inline text-sm font-medium text-gray-700 user-name">Usuario</span>
-                            <button onclick="fazerLogout()" class="flex items-center text-gray-600 hover:text-gray-900">
-                                <i class="fas fa-sign-out-alt mr-2"></i>
-                                <span class="hidden sm:inline">Sair</span>
-                            </button>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex">
+                        <div class="flex-shrink-0 flex items-center">
+                            <a href="/" class="flex items-center">
+                                <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
+                                <span class="text-2xl text-indigo-600">AssineFácil</span>
+                            </a>
                         </div>
+                    </div>
+                    <div class="flex items-center">
+                        <button id="logoutButton" class="ml-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <i class="fas fa-sign-out-alt mr-2"></i>
+                            Sair
+                        </button>
                     </div>
                 </div>
             </div>
         </nav>
 
-        <!-- Subscriptions Content -->
-        <main class="py-4 sm:py-6">
-            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-                <!-- Tabela de Assinaturas -->
-                <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Assinatura</th>
-                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
-                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Valor</th>
-                                    <th scope="col" class="px-3 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th scope="col" class="px-3 sm:px-6 py-3 text-right text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                            </tbody>
-                        </table>
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <!-- Header -->
+            <div class="px-4 py-6 sm:px-0">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-2xl font-semibold text-gray-900">Minhas Assinaturas</h1>
+                    <a href="/payment.html" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <i class="fas fa-plus mr-2"></i>
+                        Nova Assinatura
+                    </a>
+                </div>
+            </div>
+
+            <!-- Subscriptions List -->
+            <div class="mt-8">
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <div class="flow-root">
+                            <ul role="list" class="-my-5 divide-y divide-gray-200" id="subscriptionsList">
+                                <li class="py-4">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900 truncate">
+                                                Carregando assinaturas...
+                                            </p>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- Add Subscription Modal -->
+    <div id="addSubscriptionModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                <div class="px-4 py-5 sm:p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Nova Assinatura</h3>
+                    <form id="addSubscriptionForm" class="space-y-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Nome</label>
+                            <input type="text" id="name" name="name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label for="price" class="block text-sm font-medium text-gray-700">Preço</label>
+                            <input type="number" id="price" name="price" step="0.01" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label for="isMonthly" class="block text-sm font-medium text-gray-700">Tipo</label>
+                            <select id="isMonthly" name="isMonthly" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="true">Mensal</option>
+                                <option value="false">Anual</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="nextPayment" class="block text-sm font-medium text-gray-700">Próximo Pagamento</label>
+                            <input type="date" id="nextPayment" name="nextPayment" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" id="cancelButton" class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Adicionar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Função para controlar o menu mobile
-        function toggleMobileMenu() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
+        // Verifica autenticação ao carregar a página
+        window.onload = async () => {
+            const supabase = initSupabase();
+            const { data: { user }, error } = await supabase.auth.getUser();
+            
+            if (error || !user) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            // Carrega assinaturas
+            await loadSubscriptions();
+        };
+
+        // Função para carregar assinaturas
+        async function loadSubscriptions() {
+            try {
+                const supabase = initSupabase();
+                
+                const { data: subscriptions, error } = await supabase
+                    .from('subscriptions')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const subscriptionsList = document.getElementById('subscriptionsList');
+                subscriptionsList.innerHTML = subscriptions.map(sub => `
+                    <li class="py-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-900 truncate">
+                                    ${sub.name}
+                                </p>
+                                <p class="text-sm text-gray-500">
+                                    R$ ${sub.price.toFixed(2)} / ${sub.is_monthly ? 'mês' : 'ano'}
+                                </p>
+                                <p class="text-sm text-gray-500">
+                                    Próximo pagamento: ${new Date(sub.next_payment).toLocaleDateString()}
+                                </p>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                    sub.status === 'active' ? 'bg-green-100 text-green-800' :
+                                    sub.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                    'bg-red-100 text-red-800'
+                                }">
+                                    ${sub.status === 'active' ? 'Ativo' :
+                                      sub.status === 'pending' ? 'Pendente' : 'Inativo'}
+                                </span>
+                                <button onclick="deleteSubscription('${sub.id}')" class="text-red-600 hover:text-red-900">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                `).join('') || `
+                    <li class="py-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-900 truncate">
+                                    Nenhuma assinatura encontrada
+                                </p>
+                            </div>
+                        </div>
+                    </li>
+                `;
+            } catch (error) {
+                console.error('Erro ao carregar assinaturas:', error);
+                alert('Erro ao carregar assinaturas');
+            }
         }
+
+        // Função para adicionar assinatura
+        async function addSubscription(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const price = parseFloat(document.getElementById('price').value);
+            const isMonthly = document.getElementById('isMonthly').value === 'true';
+            const nextPayment = document.getElementById('nextPayment').value;
+
+            try {
+                const supabase = initSupabase();
+                
+                const { error } = await supabase
+                    .from('subscriptions')
+                    .insert([
+                        {
+                            name,
+                            price,
+                            is_monthly: isMonthly,
+                            next_payment: nextPayment,
+                            status: 'active'
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                // Fecha o modal e recarrega as assinaturas
+                document.getElementById('addSubscriptionModal').classList.add('hidden');
+                document.getElementById('addSubscriptionForm').reset();
+                await loadSubscriptions();
+            } catch (error) {
+                console.error('Erro ao adicionar assinatura:', error);
+                alert('Erro ao adicionar assinatura');
+            }
+        }
+
+        // Função para deletar assinatura
+        async function deleteSubscription(id) {
+            if (!confirm('Tem certeza que deseja excluir esta assinatura?')) return;
+
+            try {
+                const supabase = initSupabase();
+                
+                const { error } = await supabase
+                    .from('subscriptions')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                await loadSubscriptions();
+            } catch (error) {
+                console.error('Erro ao deletar assinatura:', error);
+                alert('Erro ao deletar assinatura');
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('addSubscriptionButton').addEventListener('click', () => {
+            document.getElementById('addSubscriptionModal').classList.remove('hidden');
+        });
+
+        document.getElementById('cancelButton').addEventListener('click', () => {
+            document.getElementById('addSubscriptionModal').classList.add('hidden');
+            document.getElementById('addSubscriptionForm').reset();
+        });
+
+        document.getElementById('addSubscriptionForm').addEventListener('submit', addSubscription);
+
+        document.getElementById('logoutButton').addEventListener('click', async () => {
+            try {
+                const supabase = initSupabase();
+                await supabase.auth.signOut();
+                window.location.href = '/login.html';
+            } catch (error) {
+                console.error('Erro ao fazer logout:', error);
+                alert('Erro ao fazer logout');
+            }
+        });
     </script>
 </body>
 </html> 

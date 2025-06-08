@@ -6,7 +6,7 @@
     <meta name="description" content="Gerencie suas assinaturas de forma inteligente com o AssineFácil">
     <meta name="theme-color" content="#6366f1">
     <title>Configurações - AssineFácil</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>��</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💳</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,6 +24,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/config.js"></script>
     <style>
         .loading {
             position: fixed;
@@ -59,382 +60,269 @@
         }
     </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Loading -->
-    <div id="loading" class="loading">
-        <div class="loading-spinner"></div>
-    </div>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <script>
+        // Verifica se o usuário está autenticado
+        window.onload = async () => {
+            const isAuthenticated = await checkAuth();
+            if (!isAuthenticated) {
+                window.location.href = '/login.html';
+            }
+        };
+    </script>
 
-    <!-- Overlay para mobile -->
-    <div id="overlay" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden lg:hidden z-20" onclick="toggleMobileMenu()"></div>
-
-    <!-- Sidebar -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-30">
-        <div class="flex items-center justify-between h-16 px-4 border-b">
-            <a href="/dashboard.html" class="flex items-center">
-                <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
-                <span class="text-2xl text-indigo-600">AssineFácil</span>
-            </a>
-            <button class="lg:hidden text-gray-500 hover:text-gray-600" onclick="toggleMobileMenu()">
-                <i class="fas fa-times text-lg sm:text-xl"></i>
-            </button>
-        </div>
-        <nav class="mt-4 sm:mt-6">
-            <div class="px-2 sm:px-4 space-y-1 sm:space-y-2">
-                <a href="/dashboard.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-home w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
-                    Dashboard
-                </a>
-                <a href="/subscriptions.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-credit-card w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
-                    Assinaturas
-                </a>
-                <a href="/analytics.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-chart-bar w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
-                    Análises
-                </a>
-                <a href="/settings.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-700 bg-indigo-50 rounded-md">
-                    <i class="fas fa-cog w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-indigo-600"></i>
-                    Configurações
-                </a>
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/dashboard.html" class="flex items-center">
+                            <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
+                            <span class="text-2xl text-indigo-600">AssineFácil</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/subscriptions.html" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-list mr-1"></i>
+                        Assinaturas
+                    </a>
+                    <a href="/analytics.html" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-chart-line mr-1"></i>
+                        Análises
+                    </a>
+                    <a href="/settings.html" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-cog mr-1"></i>
+                        Configurações
+                    </a>
+                    <button onclick="logout()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-sign-out-alt mr-1"></i>
+                        Sair
+                    </button>
+                </div>
             </div>
-        </nav>
-    </div>
+        </div>
+    </nav>
 
     <!-- Main Content -->
-    <div class="lg:ml-64">
-        <!-- Top Navigation -->
-        <nav class="bg-white shadow-sm">
-            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-14 sm:h-16">
-                    <div class="flex items-center">
-                        <button class="lg:hidden text-gray-500 hover:text-gray-600 mr-2 sm:mr-4" onclick="toggleMobileMenu()">
-                            <i class="fas fa-bars text-lg sm:text-xl"></i>
-                        </button>
-                        <h1 class="text-xl text-gray-900">Configurações</h1>
+    <main class="flex-grow">
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <!-- Welcome Section -->
+            <div class="px-4 py-6 sm:px-0">
+                <h1 class="text-2xl font-semibold text-gray-900">Configurações</h1>
+                <p class="mt-1 text-sm text-gray-500">
+                    Gerencie suas preferências e configurações da conta.
+                </p>
+            </div>
+
+            <!-- Settings Sections -->
+            <div class="mt-6 px-4 sm:px-0">
+                <div class="bg-white shadow-sm rounded-lg divide-y divide-gray-200">
+                    <!-- Notificações -->
+                    <div class="p-6">
+                        <h2 class="text-lg font-medium text-gray-900">Notificações</h2>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Configure como você deseja receber notificações sobre suas assinaturas.
+                        </p>
+                        <div class="mt-6 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="email-notifications" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                    <label for="email-notifications" class="ml-3 text-sm text-gray-700">
+                                        Notificações por e-mail
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="push-notifications" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                    <label for="push-notifications" class="ml-3 text-sm text-gray-700">
+                                        Notificações push
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex items-center space-x-2 sm:space-x-4">
-                        <div class="relative flex items-center space-x-2 sm:space-x-4">
-                            <img class="h-8 w-8 rounded-full user-avatar" src="https://ui-avatars.com/api/?name=Usuario&background=6366f1&color=fff" alt="Avatar">
-                            <span class="hidden sm:inline text-sm font-medium text-gray-700 user-name">Usuario</span>
-                            <button onclick="fazerLogout()" class="flex items-center text-gray-600 hover:text-gray-900">
-                                <i class="fas fa-sign-out-alt mr-2"></i>
-                                <span class="hidden sm:inline">Sair</span>
-                            </button>
+
+                    <!-- Conta -->
+                    <div class="p-6">
+                        <h2 class="text-lg font-medium text-gray-900">Conta</h2>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Gerencie suas informações pessoais e preferências da conta.
+                        </p>
+                        <div class="mt-6 space-y-4">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700">Nome</label>
+                                <input type="text" id="name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label>
+                                <input type="email" id="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Segurança -->
+                    <div class="p-6">
+                        <h2 class="text-lg font-medium text-gray-900">Segurança</h2>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Gerencie suas configurações de segurança e senha.
+                        </p>
+                        <div class="mt-6 space-y-4">
+                            <div>
+                                <label for="current-password" class="block text-sm font-medium text-gray-700">Senha atual</label>
+                                <input type="password" id="current-password" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                            <div>
+                                <label for="new-password" class="block text-sm font-medium text-gray-700">Nova senha</label>
+                                <input type="password" id="new-password" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                            <div>
+                                <label for="confirm-password" class="block text-sm font-medium text-gray-700">Confirmar nova senha</label>
+                                <input type="password" id="confirm-password" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </nav>
 
-        <!-- Settings Content -->
-        <main class="py-4 sm:py-6">
-            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-                <!-- Notificações -->
-                <div class="bg-white shadow-sm rounded-lg p-3 sm:p-6 mb-6">
-                    <h2 class="text-lg text-gray-900">Notificações</h2>
-                    <form id="form-configuracoes">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1" for="nome">Nome</label>
-                                <input id="nome" name="nome" type="text" autocomplete="name" required
-                                    class="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition placeholder-gray-400" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1" for="email">E-mail</label>
-                                <input id="email" name="email" type="email" autocomplete="email" required
-                                    class="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition placeholder-gray-400" />
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1" for="senha-atual">Senha atual</label>
-                                <input id="senha-atual" name="senha-atual" type="password" autocomplete="current-password"
-                                    class="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition placeholder-gray-400" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1" for="nova-senha">Nova senha</label>
-                                <input id="nova-senha" name="nova-senha" type="password" autocomplete="new-password"
-                                    class="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition placeholder-gray-400" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1" for="confirmar-senha">Confirmar nova senha</label>
-                                <input id="confirmar-senha" name="confirmar-senha" type="password" autocomplete="new-password"
-                                    class="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition placeholder-gray-400" />
-                            </div>
-                        </div>
-                        <div class="mt-6 flex justify-end">
-                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                Salvar Configurações
-                            </button>
-                        </div>
-                    </form>
+                <!-- Botões de ação -->
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Cancelar
+                    </button>
+                    <button type="button" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Salvar alterações
+                    </button>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
 
-    <style>
-        /* Estilo para os toggles */
-        input:checked ~ .dot {
-            transform: translateX(100%);
-            background-color: #6366f1;
-        }
-        input:checked ~ .block {
-            background-color: #818cf8;
-        }
-    </style>
+    <!-- Footer -->
+    <footer class="bg-white">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="border-t border-gray-200 pt-8 md:flex md:items-center md:justify-between">
+                <div class="flex space-x-6 md:order-2">
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+                <p class="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
+                    &copy; 2024 AssineFácil. Todos os direitos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        // Configuração do Supabase
-        const supabaseUrl = 'https://slnyyxutbgpbqcfzjyxi.supabase.co'
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsbnl5eHV0YmdwYnFjZnpqeXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4MjI5NDgsImV4cCI6MjA2NDM5ODk0OH0.4C0wHwQih8NDWKVIAzoByZRe5HXQPlcvCwUgwTrqq0s'
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
-
-        // Funções de loading
-        function mostrarLoading() {
-            document.getElementById('loading').classList.remove('hidden')
-        }
-
-        function esconderLoading() {
-            document.getElementById('loading').classList.add('hidden')
-        }
-
-        // Sistema de notificações
-        function mostrarNotificacao(mensagem, tipo = 'info') {
-            const notificacao = document.createElement('div')
-            notificacao.className = `fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full z-50 ${
-                tipo === 'sucesso' ? 'bg-green-100 text-green-800' :
-                tipo === 'erro' ? 'bg-red-100 text-red-800' :
-                'bg-blue-100 text-blue-800'
-            }`
-            notificacao.innerHTML = `
-                <div class="flex items-center">
-                    <i class="fas ${
-                        tipo === 'sucesso' ? 'fa-check-circle' :
-                        tipo === 'erro' ? 'fa-exclamation-circle' :
-                        'fa-info-circle'
-                    } mr-2"></i>
-                    <span>${mensagem}</span>
-                </div>
-            `
-            document.body.appendChild(notificacao)
-            setTimeout(() => notificacao.classList.remove('translate-x-full'), 100)
-            setTimeout(() => {
-                notificacao.classList.add('translate-x-full')
-                setTimeout(() => notificacao.remove(), 300)
-            }, 3000)
-        }
-
-        // Verifica se o usuário está autenticado
-        async function verificarAutenticacao() {
-            mostrarLoading()
-            try {
-                const { data: { session }, error } = await supabase.auth.getSession()
-                
-                if (error || !session) {
-                    mostrarNotificacao('Por favor, faça login para continuar', 'erro')
-                    window.location.href = '/login.html'
-                    return
-                }
-
-                // Atualiza o nome do usuário no avatar
-                const { data: { user } } = await supabase.auth.getUser()
-                if (user) {
-                    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.user_metadata?.full_name || user.email)}&background=6366f1&color=fff`
-                    document.querySelectorAll('.user-avatar').forEach(img => {
-                        img.src = avatarUrl
-                    })
-                    document.querySelectorAll('.user-name').forEach(span => {
-                        span.textContent = user.user_metadata?.full_name || user.email
-                    })
-
-                    // Preenche o formulário com os dados do usuário
-                    document.getElementById('nome').value = user.user_metadata?.full_name || ''
-                    document.getElementById('email').value = user.email || ''
-                }
-
-                // Carrega as configurações do usuário
-                await carregarConfiguracoes()
-            } catch (error) {
-                console.error('Erro ao verificar autenticação:', error.message)
-                mostrarNotificacao('Erro ao carregar dados', 'erro')
-            } finally {
-                esconderLoading()
-            }
-        }
-
-        // Função para carregar configurações
+        // Carrega as configurações do usuário
         async function carregarConfiguracoes() {
-            mostrarLoading()
             try {
-                console.log('=== Iniciando carregamento das configurações ===')
+                const supabase = initSupabase();
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
                 
-                const { data: { user }, error: userError } = await supabase.auth.getUser()
-                if (userError) {
-                    console.error('Erro ao obter usuário:', userError)
-                    throw new Error(`Erro ao obter usuário: ${userError.message}`)
-                }
-                
-                if (!user) {
-                    console.error('Usuário não encontrado')
-                    throw new Error('Usuário não encontrado')
-                }
+                if (userError) throw userError;
 
-                console.log('Usuário encontrado, buscando configurações...')
-                const { data: configuracoes, error: configError } = await supabase
-                    .from('configuracoes')
+                // Carrega dados do perfil
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
                     .select('*')
-                    .eq('user_id', user.id)
-                    .single()
+                    .eq('id', user.id)
+                    .single();
 
-                if (configError) {
-                    console.error('Erro ao buscar configurações:', {
-                        mensagem: configError.message,
-                        detalhes: configError.details,
-                        hint: configError.hint,
-                        code: configError.code
-                    })
-                    
-                    // Se não existir configuração, cria uma padrão
-                    if (configError.code === 'PGRST116') {
-                        console.log('Configurações não encontradas, criando configurações padrão...')
-                        const { error: insertError } = await supabase
-                            .from('configuracoes')
-                            .insert({
-                                user_id: user.id,
-                                tema: 'claro',
-                                moeda: 'BRL'
-                            })
-                        
-                        if (insertError) {
-                            console.error('Erro ao criar configurações padrão:', insertError)
-                            throw new Error(`Erro ao criar configurações padrão: ${insertError.message}`)
-                        }
-                        
-                        console.log('Configurações padrão criadas com sucesso')
-                        // Recarrega as configurações após criar
-                        return carregarConfiguracoes()
-                    }
-                    
-                    throw new Error(`Erro ao carregar configurações: ${configError.message}`)
-                }
+                if (profileError) throw profileError;
 
-                console.log('Configurações carregadas com sucesso:', configuracoes)
-
-                // Atualiza os campos do formulário
-                if (configuracoes) {
-                    const notificacoesEmail = document.getElementById('notificacoes-email')
-
-                    if (notificacoesEmail) notificacoesEmail.checked = configuracoes.notificacoes_email
-                }
-
-                console.log('=== Carregamento das configurações concluído com sucesso ===')
+                // Preenche os campos
+                document.getElementById('name').value = profile.name || '';
+                document.getElementById('email').value = user.email || '';
+                document.getElementById('email-notifications').checked = profile.email_notifications || false;
+                document.getElementById('push-notifications').checked = profile.push_notifications || false;
             } catch (error) {
-                console.error('Erro detalhado ao carregar configurações:', {
-                    mensagem: error.message,
-                    stack: error.stack,
-                    nome: error.name
-                })
-                mostrarNotificacao(`Erro ao carregar configurações: ${error.message}`, 'erro')
-            } finally {
-                esconderLoading()
+                console.error('Erro ao carregar configurações:', error);
             }
         }
 
-        // Função para salvar configurações
-        async function salvarConfiguracoes(event) {
-            event.preventDefault()
-            mostrarLoading()
+        // Salva as configurações
+        async function salvarConfiguracoes() {
             try {
-                const { data: { user } } = await supabase.auth.getUser()
-                if (!user) throw new Error('Usuário não encontrado')
+                const supabase = initSupabase();
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                
+                if (userError) throw userError;
 
-                const nome = document.getElementById('nome').value
-                const email = document.getElementById('email').value
-                const senhaAtual = document.getElementById('senha-atual').value
-                const novaSenha = document.getElementById('nova-senha').value
-                const confirmarSenha = document.getElementById('confirmar-senha').value
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const emailNotifications = document.getElementById('email-notifications').checked;
+                const pushNotifications = document.getElementById('push-notifications').checked;
 
-                // Atualiza nome e email
-                if (nome !== user.user_metadata?.full_name || email !== user.email) {
-                    const { error: updateError } = await supabase.auth.updateUser({
-                        email: email !== user.email ? email : undefined,
-                        data: { full_name: nome }
+                // Atualiza o perfil
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .update({
+                        name,
+                        email_notifications: emailNotifications,
+                        push_notifications: pushNotifications
                     })
-                    if (updateError) throw updateError
+                    .eq('id', user.id);
+
+                if (profileError) throw profileError;
+
+                // Se o e-mail foi alterado, atualiza no auth
+                if (email !== user.email) {
+                    const { error: emailError } = await supabase.auth.updateUser({
+                        email
+                    });
+                    if (emailError) throw emailError;
                 }
 
-                // Atualiza senha se fornecida
-                if (senhaAtual && novaSenha) {
-                    if (novaSenha !== confirmarSenha) {
-                        throw new Error('As senhas não coincidem')
-                    }
-
-                    const { error: signInError } = await supabase.auth.signInWithPassword({
-                        email: user.email,
-                        password: senhaAtual
-                    })
-                    if (signInError) throw new Error('Senha atual incorreta')
-
-                    const { error: updateError } = await supabase.auth.updateUser({
-                        password: novaSenha
-                    })
-                    if (updateError) throw updateError
-                }
-
-                // Salva outras configurações
-                const { error: configError } = await supabase
-                    .from('configuracoes')
-                    .upsert({
-                        user_id: user.id,
-                        tema: 'claro',
-                        moeda: 'BRL'
-                    }, { onConflict: ['user_id'] })
-
-                if (configError) throw configError
-
-                mostrarNotificacao('Configurações salvas com sucesso', 'sucesso')
-                document.getElementById('senha-atual').value = ''
-                document.getElementById('nova-senha').value = ''
-                document.getElementById('confirmar-senha').value = ''
+                alert('Configurações salvas com sucesso!');
             } catch (error) {
-                console.error('Erro ao salvar configurações:', error.message)
-                mostrarNotificacao(error.message, 'erro')
-            } finally {
-                esconderLoading()
+                console.error('Erro ao salvar configurações:', error);
+                alert('Erro ao salvar configurações');
             }
         }
 
-        // Função para fazer logout
-        async function fazerLogout() {
-            mostrarLoading()
+        // Atualiza a senha
+        async function atualizarSenha() {
             try {
-                const { error } = await supabase.auth.signOut()
-                if (error) throw error
-                mostrarNotificacao('Logout realizado com sucesso', 'sucesso')
-                window.location.href = '/login.html'
+                const currentPassword = document.getElementById('current-password').value;
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+
+                if (newPassword !== confirmPassword) {
+                    alert('As senhas não coincidem');
+                    return;
+                }
+
+                const supabase = initSupabase();
+                const { error } = await supabase.auth.updateUser({
+                    password: newPassword
+                });
+
+                if (error) throw error;
+
+                alert('Senha atualizada com sucesso!');
+                document.getElementById('current-password').value = '';
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-password').value = '';
             } catch (error) {
-                console.error('Erro ao fazer logout:', error.message)
-                mostrarNotificacao('Erro ao fazer logout', 'erro')
-            } finally {
-                esconderLoading()
+                console.error('Erro ao atualizar senha:', error);
+                alert('Erro ao atualizar senha');
             }
         }
 
-        // Função para controlar o menu mobile
-        function toggleMobileMenu() {
-            const sidebar = document.getElementById('sidebar')
-            const overlay = document.getElementById('overlay')
-            sidebar.classList.toggle('-translate-x-full')
-            overlay.classList.toggle('hidden')
-        }
+        // Carrega as configurações ao iniciar
+        document.addEventListener('DOMContentLoaded', carregarConfiguracoes);
 
-        // Verifica autenticação ao carregar a página
-        window.onload = verificarAutenticacao
-
-        // Adiciona evento de submit ao formulário
-        document.getElementById('form-configuracoes').addEventListener('submit', salvarConfiguracoes)
+        // Adiciona eventos aos botões
+        document.querySelector('button[type="button"]:last-child').addEventListener('click', salvarConfiguracoes);
     </script>
 </body>
 </html> 

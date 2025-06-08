@@ -6,7 +6,7 @@
     <meta name="description" content="Gerencie suas assinaturas de forma inteligente com o AssineFácil">
     <meta name="theme-color" content="#6366f1">
     <title>Dashboard - AssineFácil</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>��</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💳</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/config.js"></script>
     <style>
         .loading {
             position: fixed;
@@ -59,442 +60,239 @@
             font-weight: 400;
         }
     </style>
-    <script>
-        // Configuração do Supabase
-        const supabaseUrl = 'https://slnyyxutbgpbqcfzjyxi.supabase.co'
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsbnl5eHV0YmdwYnFjZnpqeXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4MjI5NDgsImV4cCI6MjA2NDM5ODk0OH0.4C0wHwQih8NDWKVIAzoByZRe5HXQPlcvCwUgwTrqq0s'
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
-            auth: {
-                persistSession: true,
-                autoRefreshToken: true,
-                detectSessionInUrl: true
-            },
-            global: {
-                headers: {
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache'
-                }
-            }
-        })
-
-        // Funções de loading
-        function mostrarLoading() {
-            document.getElementById('loading').classList.remove('hidden')
-        }
-
-        function esconderLoading() {
-            document.getElementById('loading').classList.add('hidden')
-        }
-
-        // Sistema de notificações
-        function mostrarNotificacao(mensagem, tipo = 'info') {
-            const notificacao = document.createElement('div')
-            notificacao.className = `fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full z-50 ${
-                tipo === 'sucesso' ? 'bg-green-100 text-green-800' :
-                tipo === 'erro' ? 'bg-red-100 text-red-800' :
-                'bg-blue-100 text-blue-800'
-            }`
-            notificacao.innerHTML = `
-                <div class="flex items-center">
-                    <i class="fas ${
-                        tipo === 'sucesso' ? 'fa-check-circle' :
-                        tipo === 'erro' ? 'fa-exclamation-circle' :
-                        'fa-info-circle'
-                    } mr-2"></i>
-                    <span>${mensagem}</span>
-                </div>
-            `
-            document.body.appendChild(notificacao)
-            setTimeout(() => notificacao.classList.remove('translate-x-full'), 100)
-            setTimeout(() => {
-                notificacao.classList.add('translate-x-full')
-                setTimeout(() => notificacao.remove(), 300)
-            }, 3000)
-        }
-
-        // Verifica se o usuário está autenticado
-        async function verificarAutenticacao() {
-            mostrarLoading()
-            try {
-                console.log('Iniciando verificação de autenticação...')
-                const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-                
-                if (sessionError) {
-                    console.error('Erro ao obter sessão:', sessionError)
-                    throw new Error(`Erro de autenticação: ${sessionError.message}`)
-                }
-                
-                if (!session) {
-                    console.log('Nenhuma sessão encontrada, redirecionando para login...')
-                    mostrarNotificacao('Por favor, faça login para continuar', 'erro')
-                    window.location.href = '/login.html'
-                    return
-                }
-
-                console.log('Sessão encontrada, obtendo dados do usuário...')
-                const { data: { user }, error: userError } = await supabase.auth.getUser()
-                
-                if (userError) {
-                    console.error('Erro ao obter dados do usuário:', userError)
-                    throw new Error(`Erro ao obter dados do usuário: ${userError.message}`)
-                }
-
-                if (user) {
-                    console.log('Dados do usuário obtidos com sucesso')
-                    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.user_metadata?.full_name || user.email)}&background=6366f1&color=fff`
-                    document.querySelectorAll('.user-avatar').forEach(img => {
-                        img.src = avatarUrl
-                    })
-                    document.querySelectorAll('.user-name').forEach(span => {
-                        span.textContent = user.user_metadata?.full_name || user.email
-                    })
-                }
-
-                // Carrega os dados do dashboard
-                await carregarDadosDashboard()
-            } catch (error) {
-                console.error('Erro detalhado na verificação de autenticação:', error)
-                mostrarNotificacao(`Erro ao carregar dados: ${error.message}`, 'erro')
-            } finally {
-                esconderLoading()
-            }
-        }
-
-        // Função para carregar dados do dashboard
-        async function carregarDadosDashboard() {
-            mostrarLoading()
-            try {
-                console.log('=== Iniciando carregamento dos dados do dashboard ===')
-                
-                // Carregando ofertas primeiro
-                console.log('1. Buscando ofertas disponíveis...')
-                const { data: ofertas, error: ofertasError } = await supabase
-                    .from('ofertas')
-                    .select('*')
-                    .order('created_at', { ascending: false })
-                    .limit(4)
-
-                if (ofertasError) {
-                    console.error('Erro detalhado ao carregar ofertas:', {
-                        mensagem: ofertasError.message,
-                        detalhes: ofertasError.details,
-                        hint: ofertasError.hint,
-                        code: ofertasError.code
-                    })
-                    throw ofertasError
-                }
-
-                console.log('2. Ofertas carregadas com sucesso:', ofertas)
-                
-                // Atualiza o número de ofertas disponíveis
-                document.querySelector('[data-metrica="ofertas-disponiveis"]').textContent = ofertas ? ofertas.length : 0
-
-                // Carregando assinaturas
-                console.log('3. Buscando assinaturas ativas...')
-                const { data: assinaturas, error: assinaturasError } = await supabase
-                    .from('assinaturas')
-                    .select('*')
-                    .eq('status', 'Ativo')
-
-                if (assinaturasError) {
-                    console.error('Erro detalhado ao carregar assinaturas:', {
-                        mensagem: assinaturasError.message,
-                        detalhes: assinaturasError.details,
-                        hint: assinaturasError.hint,
-                        code: assinaturasError.code
-                    })
-                    throw new Error(`Erro ao carregar assinaturas: ${assinaturasError.message}`)
-                }
-
-                console.log('4. Assinaturas carregadas com sucesso:', assinaturas)
-
-                // Atualiza os cards de métricas
-                console.log('5. Calculando métricas...')
-                const totalGasto = assinaturas.reduce((acc, assinatura) => acc + assinatura.valor, 0)
-                const assinaturasAtivas = assinaturas.length
-                const economia = assinaturas.reduce((acc, assinatura) => acc + (assinatura.economia || 0), 0)
-
-                console.log('6. Métricas calculadas:', {
-                    totalGasto,
-                    assinaturasAtivas,
-                    economia
-                })
-
-                document.querySelector('[data-metrica="total-gasto"]').textContent = `R$ ${totalGasto.toFixed(2)}`
-                document.querySelector('[data-metrica="assinaturas-ativas"]').textContent = assinaturasAtivas
-                document.querySelector('[data-metrica="economia"]').textContent = `R$ ${economia.toFixed(2)}`
-
-                // Atualiza o gráfico de gastos
-                console.log('7. Preparando dados para o gráfico...')
-                const categorias = {}
-                assinaturas.forEach(assinatura => {
-                    if (!categorias[assinatura.categoria]) {
-                        categorias[assinatura.categoria] = 0
-                    }
-                    categorias[assinatura.categoria] += assinatura.valor
-                })
-
-                console.log('8. Dados do gráfico preparados:', categorias)
-
-                const ofertasContainer = document.querySelector('[data-container="ofertas"]')
-                if (!ofertasContainer) {
-                    console.error('Container de ofertas não encontrado no DOM')
-                    throw new Error('Container de ofertas não encontrado')
-                }
-
-                ofertasContainer.innerHTML = ''
-
-                if (!ofertas || ofertas.length === 0) {
-                    console.log('9. Nenhuma oferta disponível')
-                    ofertasContainer.innerHTML = `
-                        <div class="text-center text-gray-500 py-4">
-                            Nenhuma oferta disponível no momento
-                        </div>
-                    `
-                    return
-                }
-
-                console.log('9. Renderizando ofertas...')
-                ofertas.forEach(oferta => {
-                    console.log('Renderizando oferta:', oferta)
-                    const div = document.createElement('div')
-                    div.className = 'flex items-center justify-between p-2 sm:p-4 bg-gray-50 rounded-lg fade-in cursor-pointer hover:bg-gray-100 transition-colors duration-200'
-                    div.onclick = () => {
-                        if (oferta.link) {
-                            window.open(oferta.link, '_blank')
-                        }
-                    }
-                    div.innerHTML = `
-                        <div class="flex items-center">
-                            <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-${oferta.cor || 'blue'}-100 flex items-center justify-center">
-                                <i class="fas ${oferta.icone || 'fa-tag'} text-${oferta.cor || 'blue'}-600 text-sm sm:text-xl"></i>
-                            </div>
-                            <div class="ml-2 sm:ml-4">
-                                <p class="text-xs sm:text-sm font-medium text-gray-900">${oferta.nome}</p>
-                                <p class="text-xs text-green-600">${oferta.descricao}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="text-xs font-medium text-gray-900 mr-2">${oferta.desconto}</span>
-                            ${oferta.link ? '<i class="fas fa-external-link-alt text-xs text-gray-400"></i>' : ''}
-                        </div>
-                    `
-                    ofertasContainer.appendChild(div)
-                })
-
-                console.log('=== Carregamento dos dados do dashboard concluído com sucesso ===')
-            } catch (error) {
-                console.error('Erro detalhado ao carregar dados do dashboard:', {
-                    mensagem: error.message,
-                    stack: error.stack,
-                    nome: error.name
-                })
-                mostrarNotificacao(`Erro ao carregar dados: ${error.message}`, 'erro')
-            } finally {
-                esconderLoading()
-            }
-        }
-
-        // Função para fazer logout
-        async function fazerLogout() {
-            mostrarLoading()
-            try {
-                const { error } = await supabase.auth.signOut()
-                if (error) throw error
-                mostrarNotificacao('Logout realizado com sucesso', 'sucesso')
-                window.location.href = '/'
-            } catch (error) {
-                console.error('Erro ao fazer logout:', error.message)
-                mostrarNotificacao('Erro ao fazer logout', 'erro')
-            } finally {
-                esconderLoading()
-            }
-        }
-
-        // Função para controlar o menu mobile
-        function toggleMobileMenu() {
-            const sidebar = document.getElementById('sidebar')
-            const overlay = document.getElementById('overlay')
-            sidebar.classList.toggle('-translate-x-full')
-            overlay.classList.toggle('hidden')
-        }
-
-        // Verifica autenticação ao carregar a página
-        window.onload = verificarAutenticacao
-    </script>
 </head>
-<body class="bg-gray-50">
-    <!-- Loading -->
-    <div id="loading" class="loading">
-        <div class="loading-spinner"></div>
-    </div>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <script>
+        // Verifica se o usuário está autenticado
+        window.onload = async () => {
+            const isAuthenticated = await checkAuth();
+            if (!isAuthenticated) {
+                window.location.href = '/login.html';
+            }
+        };
+    </script>
 
-    <!-- Overlay para mobile -->
-    <div id="overlay" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden lg:hidden z-20" onclick="toggleMobileMenu()"></div>
-
-    <!-- Sidebar -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-30">
-        <div class="flex items-center justify-between h-16 px-4 border-b">
-            <a href="/" class="flex items-center">
-                <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
-                <span class="text-2xl text-indigo-600">AssineFácil</span>
-            </a>
-            <button class="lg:hidden text-gray-500 hover:text-gray-600" onclick="toggleMobileMenu()">
-                <i class="fas fa-times text-lg sm:text-xl"></i>
-            </button>
-        </div>
-        <nav class="mt-4 sm:mt-6">
-            <div class="px-2 sm:px-4 space-y-1 sm:space-y-2">
-                <a href="/dashboard.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-700 bg-indigo-50 rounded-md">
-                    <i class="fas fa-home w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-indigo-600"></i>
-                    Dashboard
-                </a>
-                <a href="/subscriptions.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-credit-card w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
-                    Assinaturas
-                </a>
-                <a href="/analytics.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-chart-bar w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
-                    Análises
-                </a>
-                <a href="/settings.html" class="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-600 hover:bg-gray-50 rounded-md">
-                    <i class="fas fa-cog w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3"></i>
-                    Configurações
-                </a>
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/dashboard.html" class="flex items-center">
+                            <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
+                            <span class="text-2xl text-indigo-600">AssineFácil</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/subscriptions.html" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-list mr-1"></i>
+                        Assinaturas
+                    </a>
+                    <a href="/analytics.html" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-chart-line mr-1"></i>
+                        Análises
+                    </a>
+                    <a href="/settings.html" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-cog mr-1"></i>
+                        Configurações
+                    </a>
+                    <button onclick="logout()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-sign-out-alt mr-1"></i>
+                        Sair
+                    </button>
+                </div>
             </div>
-        </nav>
-    </div>
+        </div>
+    </nav>
 
     <!-- Main Content -->
-    <div class="lg:ml-64">
-        <!-- Top Navigation -->
-        <nav class="bg-white shadow-sm">
-            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-14 sm:h-16">
-                    <div class="flex items-center">
-                        <button class="lg:hidden text-gray-500 hover:text-gray-600 mr-2 sm:mr-4" onclick="toggleMobileMenu()">
-                            <i class="fas fa-bars text-lg sm:text-xl"></i>
-                        </button>
-                        <h1 class="text-xl text-gray-900">Dashboard</h1>
+    <main class="flex-grow">
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <!-- Welcome Section -->
+            <div class="px-4 py-6 sm:px-0">
+                <h1 class="text-2xl font-semibold text-gray-900">Bem-vindo ao AssineFácil</h1>
+                <p class="mt-1 text-sm text-gray-500">
+                    Gerencie suas assinaturas de forma simples e eficiente.
+                </p>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="mt-6 px-4 sm:px-0">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <a href="/plans.html" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <i class="fas fa-plus mr-2"></i>
+                        Nova Assinatura
+                    </a>
+
+                    <a href="/analytics.html" class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-chart-line text-indigo-600 text-2xl"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <span class="absolute inset-0" aria-hidden="true"></span>
+                            <p class="text-sm font-medium text-gray-900">
+                                Análises
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                Visualize seus gastos e economias
+                            </p>
+                        </div>
+                    </a>
+
+                    <a href="/settings.html" class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-cog text-indigo-600 text-2xl"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <span class="absolute inset-0" aria-hidden="true"></span>
+                            <p class="text-sm font-medium text-gray-900">
+                                Configurações
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                Personalize suas preferências
+                            </p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Subscriptions -->
+            <div class="mt-8 px-4 sm:px-0">
+                <div class="sm:flex sm:items-center">
+                    <div class="sm:flex-auto">
+                        <h2 class="text-xl font-semibold text-gray-900">Assinaturas Recentes</h2>
+                        <p class="mt-2 text-sm text-gray-700">
+                            Lista das suas assinaturas mais recentes.
+                        </p>
                     </div>
-                    <div class="flex items-center space-x-2 sm:space-x-4">
-                        <div class="relative flex items-center space-x-2 sm:space-x-4">
-                            <img class="h-8 w-8 rounded-full user-avatar" src="https://ui-avatars.com/api/?name=Usuario&background=6366f1&color=fff" alt="Avatar">
-                            <span class="hidden sm:inline text-sm font-medium text-gray-700 user-name">Usuario</span>
-                            <button onclick="fazerLogout()" class="flex items-center text-gray-600 hover:text-gray-900">
-                                <i class="fas fa-sign-out-alt mr-2"></i>
-                                <span class="hidden sm:inline">Sair</span>
-                            </button>
+                </div>
+                <div class="mt-4 flex flex-col">
+                    <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                        <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                            <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                                <table class="min-w-full divide-y divide-gray-300">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Nome</th>
+                                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Plano</th>
+                                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Valor</th>
+                                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
+                                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Próximo Pagamento</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200 bg-white" id="subscriptionsTable">
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4">
+                                                <div class="flex justify-center">
+                                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </nav>
+        </div>
+    </main>
 
-        <!-- Dashboard Content -->
-        <main class="py-4 sm:py-6">
-            <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-                <!-- Cards de Métricas -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-6">
-                    <!-- Total Gasto -->
-                    <div class="bg-white rounded-lg shadow-sm p-3 sm:p-6">
-                        <div class="flex items-center">
-                            <div class="p-2 sm:p-3 rounded-full bg-indigo-100 text-indigo-600">
-                                <i class="fas fa-dollar-sign text-base sm:text-xl"></i>
-                            </div>
-                            <div class="ml-3 sm:ml-4">
-                                <p class="text-xs sm:text-sm font-medium text-gray-600">Total Gasto</p>
-                                <p class="text-lg sm:text-2xl font-semibold text-gray-900" data-metrica="total-gasto">R$ 25,80</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Assinaturas Ativas -->
-                    <div class="bg-white rounded-lg shadow-sm p-3 sm:p-6">
-                        <div class="flex items-center">
-                            <div class="p-2 sm:p-3 rounded-full bg-green-100 text-green-600">
-                                <i class="fas fa-check-circle text-base sm:text-xl"></i>
-                            </div>
-                            <div class="ml-3 sm:ml-4">
-                                <p class="text-xs sm:text-sm font-medium text-gray-600">Assinaturas Ativas</p>
-                                <p class="text-lg sm:text-2xl font-semibold text-gray-900" data-metrica="assinaturas-ativas">2</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Ofertas Disponíveis -->
-                    <div class="bg-white rounded-lg shadow-sm p-3 sm:p-6">
-                        <div class="flex items-center">
-                            <div class="p-2 sm:p-3 rounded-full bg-yellow-100 text-yellow-600">
-                                <i class="fas fa-tag text-base sm:text-xl"></i>
-                            </div>
-                            <div class="ml-3 sm:ml-4">
-                                <p class="text-xs sm:text-sm font-medium text-gray-600">Ofertas Disponíveis</p>
-                                <p class="text-lg sm:text-2xl font-semibold text-gray-900" data-metrica="ofertas-disponiveis">3</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Economia -->
-                    <div class="bg-white rounded-lg shadow-sm p-3 sm:p-6">
-                        <div class="flex items-center">
-                            <div class="p-2 sm:p-3 rounded-full bg-red-100 text-red-600">
-                                <i class="fas fa-piggy-bank text-base sm:text-xl"></i>
-                            </div>
-                            <div class="ml-3 sm:ml-4">
-                                <p class="text-xs sm:text-sm font-medium text-gray-600">Economia</p>
-                                <p class="text-lg sm:text-2xl font-semibold text-gray-900" data-metrica="economia">R$ 20,00</p>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Footer -->
+    <footer class="bg-white">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="border-t border-gray-200 pt-8 md:flex md:items-center md:justify-between">
+                <div class="flex space-x-6 md:order-2">
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <i class="fab fa-twitter"></i>
+                    </a>
                 </div>
-
-                <!-- Gráficos e Tabelas -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
-                    <!-- Gráfico de Gastos -->
-                    <div class="bg-white rounded-lg shadow-sm p-3 sm:p-6">
-                        <h2 class="text-lg text-gray-900">Gastos por Categoria</h2>
-                        <div class="h-48 sm:h-64 md:h-80">
-                            <canvas id="expensesChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Ofertas Exclusivas -->
-                    <div class="bg-white rounded-lg shadow-sm p-3 sm:p-6">
-                        <h2 class="text-lg text-gray-900">Ofertas Exclusivas</h2>
-                        <div class="space-y-2 sm:space-y-4" data-container="ofertas">
-                            <!-- As ofertas serão carregadas dinamicamente aqui -->
-                        </div>
-                    </div>
-                </div>
+                <p class="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
+                    &copy; 2024 AssineFácil. Todos os direitos reservados.
+                </p>
             </div>
-        </main>
-    </div>
+        </div>
+    </footer>
 
     <script>
-        // Configuração do gráfico de gastos
-        const ctx = document.getElementById('expensesChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Vídeos', 'Canais ao Vivo'],
-                datasets: [{
-                    data: [12.90, 12.90],
-                    backgroundColor: [
-                        '#ef4444',
-                        '#3b82f6'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
+        // Função para carregar as assinaturas recentes
+        async function loadRecentSubscriptions() {
+            try {
+                const supabase = initSupabase();
+                const { data: subscriptions, error } = await supabase
+                    .from('assinaturas')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+
+                const tableBody = document.getElementById('subscriptionsTable');
+                if (!subscriptions || subscriptions.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-gray-500">
+                                Nenhuma assinatura encontrada.
+                            </td>
+                        </tr>
+                    `;
+                    return;
                 }
+
+                tableBody.innerHTML = subscriptions.map(sub => `
+                    <tr>
+                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                            ${sub.nome}
+                        </td>
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            ${sub.plano}
+                        </td>
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            R$ ${sub.valor.toFixed(2)}
+                        </td>
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                sub.status === 'ativo' ? 'bg-green-100 text-green-800' :
+                                sub.status === 'pendente' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-red-100 text-red-800'
+                            }">
+                                ${sub.status.charAt(0).toUpperCase() + sub.status.slice(1)}
+                            </span>
+                        </td>
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                            ${new Date(sub.proximo_pagamento).toLocaleDateString('pt-BR')}
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Erro ao carregar assinaturas:', error);
+                const tableBody = document.getElementById('subscriptionsTable');
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-red-500">
+                            Erro ao carregar assinaturas. Por favor, tente novamente.
+                        </td>
+                    </tr>
+                `;
             }
-        });
+        }
+
+        // Carrega as assinaturas quando a página carregar
+        window.onload = async () => {
+            const isAuthenticated = await checkAuth();
+            if (!isAuthenticated) {
+                window.location.href = '/login.html';
+                return;
+            }
+            loadRecentSubscriptions();
+        };
     </script>
 </body>
 </html> 

@@ -24,6 +24,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/config.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -59,189 +60,192 @@
         }
     </style>
 </head>
-<body class="bg-gray-50">
-    <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-24 sm:px-6 lg:px-8">
-        <!-- Logo -->
-        <div class="sm:mx-auto sm:w-full sm:max-w-md mb-8">
-            <a href="/index.html" class="flex justify-center">
-                <div class="flex items-center">
-                    <i class="fas fa-wallet text-indigo-600 text-3xl mr-2"></i>
-                    <span class="text-3xl text-indigo-600">AssineFácil</span>
-                </div>
-            </a>
-        </div>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <script>
+        // Verifica se o usuário está autenticado
+        window.onload = async () => {
+            const isAuthenticated = await checkAuth();
+            if (isAuthenticated) {
+                window.location.href = '/dashboard.html';
+            }
+        };
+    </script>
 
-        <!-- Loading -->
-        <div id="loading" class="loading">
-            <div class="loading-spinner"></div>
-        </div>
-
-        <!-- Registro Content -->
-        <main class="min-h-screen flex items-center justify-center py-4 sm:py-6">
-            <div class="w-full max-w-md px-3 sm:px-6 lg:px-8">
-                <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                    <div class="bg-white py-12 px-8 shadow sm:rounded-lg sm:px-12">
-                        <h1 class="text-2xl sm:text-3xl text-gray-900 mb-6">Criar Conta</h1>
-                        <form id="form-register" onsubmit="fazerRegistro(event)" class="space-y-4 sm:space-y-6">
-                            <div>
-                                <label for="nome" class="block text-sm text-gray-700">Nome</label>
-                                <input type="text" id="nome" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                            </div>
-                            <div>
-                                <label for="email" class="block text-sm text-gray-700">Email</label>
-                                <input type="email" id="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                            </div>
-                            <div>
-                                <label for="senha" class="block text-sm text-gray-700">Senha</label>
-                                <input type="password" id="senha" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                            </div>
-                            <div>
-                                <label for="confirmar-senha" class="block text-sm text-gray-700">Confirmar Senha</label>
-                                <input type="password" id="confirmar-senha" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                            </div>
-                            <div id="mensagem-erro" class="hidden text-sm text-red-600"></div>
-                            <div id="mensagem-sucesso" class="hidden text-sm text-green-600"></div>
-                            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                Criar Conta
-                            </button>
-                        </form>
-                        <div class="mt-4 sm:mt-6 text-center">
-                            <p class="text-sm text-gray-600">
-                                Já tem uma conta?
-                                <a href="/login.html" class="text-indigo-600 hover:text-indigo-500">
-                                    Fazer login
-                                </a>
-                            </p>
-                        </div>
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/" class="flex items-center">
+                            <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
+                            <span class="text-2xl text-indigo-600">AssineFácil</span>
+                        </a>
                     </div>
                 </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/login.html" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-sign-in-alt mr-1"></i>
+                        Entrar
+                    </a>
+                </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div class="sm:mx-auto sm:w-full sm:max-w-md">
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Crie sua conta
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Ou
+                <a href="/login.html" class="font-medium text-indigo-600 hover:text-indigo-500">
+                    entre com sua conta existente
+                </a>
+            </p>
+        </div>
+
+        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+            <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                <form id="registerForm" class="space-y-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700">
+                            Nome
+                        </label>
+                        <div class="mt-1">
+                            <input id="name" name="name" type="text" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">
+                            Email
+                        </label>
+                        <div class="mt-1">
+                            <input id="email" name="email" type="email" autocomplete="email" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700">
+                            Senha
+                        </label>
+                        <div class="mt-1">
+                            <input id="password" name="password" type="password" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="confirmPassword" class="block text-sm font-medium text-gray-700">
+                            Confirmar Senha
+                        </label>
+                        <div class="mt-1">
+                            <input id="confirmPassword" name="confirmPassword" type="password" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Criar Conta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="border-t border-gray-200 pt-8 md:flex md:items-center md:justify-between">
+                <div class="flex space-x-6 md:order-2">
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+                <p class="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
+                    &copy; 2024 AssineFácil. Todos os direitos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        // Configuração do Supabase
-        const supabaseUrl = 'https://slnyyxutbgpbqcfzjyxi.supabase.co'
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsbnl5eHV0YmdwYnFjZnpqeXhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4MjI5NDgsImV4cCI6MjA2NDM5ODk0OH0.4C0wHwQih8NDWKVIAzoByZRe5HXQPlcvCwUgwTrqq0s'
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-        // Funções de loading
-        function mostrarLoading() {
-            document.getElementById('loading').classList.remove('hidden')
-        }
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
 
-        function esconderLoading() {
-            document.getElementById('loading').classList.add('hidden')
-        }
-
-        // Sistema de notificações
-        function mostrarNotificacao(mensagem, tipo = 'info') {
-            const notificacao = document.createElement('div')
-            notificacao.className = `fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full z-50 ${
-                tipo === 'sucesso' ? 'bg-green-100 text-green-800' :
-                tipo === 'erro' ? 'bg-red-100 text-red-800' :
-                'bg-blue-100 text-blue-800'
-            }`
-            notificacao.innerHTML = `
-                <div class="flex items-center">
-                    <i class="fas ${
-                        tipo === 'sucesso' ? 'fa-check-circle' :
-                        tipo === 'erro' ? 'fa-exclamation-circle' :
-                        'fa-info-circle'
-                    } mr-2"></i>
-                    <span>${mensagem}</span>
-                </div>
-            `
-            document.body.appendChild(notificacao)
-            setTimeout(() => notificacao.classList.remove('translate-x-full'), 100)
-            setTimeout(() => {
-                notificacao.classList.add('translate-x-full')
-                setTimeout(() => notificacao.remove(), 300)
-            }, 3000)
-        }
-
-        // Verifica se o usuário já está autenticado
-        async function verificarAutenticacao() {
-            mostrarLoading()
-            try {
-                const { data: { session }, error } = await supabase.auth.getSession()
-                
-                if (error) throw error
-
-                if (session) {
-                    window.location.href = '/dashboard.html'
-                    return
-                }
-            } catch (error) {
-                console.error('Erro ao verificar autenticação:', error.message)
-                mostrarNotificacao('Erro ao verificar autenticação', 'erro')
-            } finally {
-                esconderLoading()
+            if (password !== confirmPassword) {
+                alert('As senhas não coincidem.');
+                return;
             }
-        }
-
-        // Função para fazer registro
-        async function fazerRegistro(event) {
-            event.preventDefault()
-            mostrarLoading()
-
-            const nome = document.getElementById('nome').value
-            const email = document.getElementById('email').value
-            const senha = document.getElementById('senha').value
-            const confirmarSenha = document.getElementById('confirmar-senha').value
-            const mensagemErro = document.getElementById('mensagem-erro')
-            const mensagemSucesso = document.getElementById('mensagem-sucesso')
 
             try {
-                // Valida se as senhas coincidem
-                if (senha !== confirmarSenha) {
-                    throw new Error('As senhas não coincidem')
-                }
-
-                // Valida a força da senha
-                if (senha.length < 6) {
-                    throw new Error('A senha deve ter pelo menos 6 caracteres')
-                }
-
-                const { data, error } = await supabase.auth.signUp({
+                const supabase = initSupabase();
+                const { data: { user }, error: signUpError } = await supabase.auth.signUp({
                     email,
-                    password: senha,
+                    password,
                     options: {
                         data: {
-                            full_name: nome
+                            name
                         }
                     }
-                })
+                });
 
-                if (error) throw error
+                if (signUpError) throw signUpError;
 
-                mensagemErro.classList.add('hidden')
-                mensagemSucesso.classList.remove('hidden')
-                mostrarNotificacao('Registro realizado com sucesso', 'sucesso')
+                // Verifica se há um plano selecionado na URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const planId = urlParams.get('planid');
 
-                // Limpa o formulário
-                document.getElementById('form-register').reset()
+                if (planId) {
+                    // Busca o plano selecionado
+                    const { data: plan, error: planError } = await supabase
+                        .from('plans')
+                        .select('*')
+                        .eq('name', planId)
+                        .single();
 
-                // Redireciona para o login após 2 segundos
-                setTimeout(() => {
-                    window.location.href = '/login/login.html'
-                }, 2000)
+                    if (planError) throw planError;
+
+                    // Cria a assinatura inicial
+                    const { error: subError } = await supabase
+                        .from('assinaturas')
+                        .insert([
+                            {
+                                user_id: user.id,
+                                nome: 'Assinatura Inicial',
+                                plano: plan.name,
+                                categoria: 'Inicial',
+                                valor: plan.price,
+                                periodicidade: 'mensal',
+                                status: 'ativo',
+                                proximo_pagamento: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                            }
+                        ]);
+
+                    if (subError) throw subError;
+                }
+
+                // Redireciona para o dashboard
+                window.location.href = '/dashboard.html';
             } catch (error) {
-                console.error('Erro ao fazer registro:', error.message)
-                mensagemErro.textContent = error.message
-                mensagemErro.classList.remove('hidden')
-                mensagemSucesso.classList.add('hidden')
-                mostrarNotificacao(error.message, 'erro')
-            } finally {
-                esconderLoading()
+                console.error('Erro ao criar conta:', error);
+                alert('Erro ao criar conta. Por favor, tente novamente.');
             }
-        }
-
-        // Verifica autenticação ao carregar a página
-        window.onload = verificarAutenticacao
-
-        // Adiciona evento de submit ao formulário
-        document.getElementById('form-register').addEventListener('submit', fazerRegistro)
+        });
     </script>
 </body>
 </html> 

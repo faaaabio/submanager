@@ -24,6 +24,7 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/config.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -59,338 +60,179 @@
         }
     </style>
 </head>
-<body class="bg-gray-50">
-    <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-24 sm:px-6 lg:px-8">
-        <!-- Logo -->
-        <div class="sm:mx-auto sm:w-full sm:max-w-md mb-8">
-            <a href="/index.html" class="flex justify-center">
-                <div class="flex items-center">
-                    <i class="fas fa-wallet text-indigo-600 text-3xl mr-2"></i>
-                    <span class="text-3xl text-indigo-600">AssineFácil</span>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <script>
+        // Verifica se o usuário está autenticado
+        window.onload = async () => {
+            const isAuthenticated = await checkAuth();
+            if (isAuthenticated) {
+                window.location.href = '/dashboard.html';
+            }
+        };
+    </script>
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/" class="flex items-center">
+                            <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
+                            <span class="text-2xl text-indigo-600">AssineFácil</span>
+                        </a>
+                    </div>
                 </div>
-            </a>
-        </div>
-
-        <!-- Loading -->
-        <div id="loading" class="loading">
-            <div class="loading-spinner"></div>
-        </div>
-
-        <!-- Login Content -->
-        <main class="min-h-screen flex items-center justify-center py-4 sm:py-6">
-            <div class="w-full max-w-md px-3 sm:px-6 lg:px-8">
-                <div class="bg-white py-12 px-8 shadow sm:rounded-lg sm:px-12">
-                    <h1 class="text-2xl sm:text-3xl text-gray-900 mb-6">Login</h1>
-                    <form id="form-login" onsubmit="fazerLogin(event)" class="space-y-4 sm:space-y-6">
-                        <div>
-                            <label for="email" class="block text-sm text-gray-700">Email</label>
-                            <input type="email" id="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                        <div>
-                            <label for="senha" class="block text-sm text-gray-700">Senha</label>
-                            <input type="password" id="senha" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                        <div id="mensagem-erro" class="hidden text-sm text-red-600"></div>
-                        <div id="mensagem-sucesso" class="hidden text-sm text-green-600"></div>
-                        <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Entrar
-                        </button>
-                    </form>
-                    <p class="mt-4 text-center text-sm text-gray-600">
-                        Não tem uma conta? <a href="/register.html" class="font-medium text-indigo-600 hover:text-indigo-500">Registre-se</a>
-                    </p>
+                <div class="flex items-center space-x-4">
+                    <a href="/register.html" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-user-plus mr-1"></i>
+                        Criar Conta
+                    </a>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </nav>
 
-    <script type="module">
-        // Importa a configuração do Supabase
-        import { getSupabaseConfig } from '/config.js'
-
-        // Função para inicializar o cliente Supabase de forma segura
-        async function inicializarSupabase() {
-            try {
-                console.log('Iniciando carregamento da configuração do Supabase...')
-                const config = await getSupabaseConfig()
-                
-                if (!config.url || !config.key || config.url === 'https://your-project.supabase.co' || config.key === 'your-anon-key') {
-                    console.error('Configuração incompleta ou não configurada')
-                    throw new Error('Configuração do Supabase não configurada')
-                }
-
-                console.log('Configuração carregada com sucesso, criando cliente...')
-                const client = window.supabase.createClient(config.url, config.key)
-                
-                // Testa a conexão
-                const { data, error } = await client.auth.getSession()
-                if (error) {
-                    console.error('Erro ao testar conexão:', error)
-                    throw new Error('Erro ao conectar com o servidor')
-                }
-                
-                console.log('Cliente Supabase inicializado com sucesso')
-                return client
-            } catch (error) {
-                console.error('Erro detalhado ao inicializar Supabase:', {
-                    mensagem: error.message,
-                    stack: error.stack,
-                    nome: error.name
-                })
-                mostrarNotificacao('Erro ao inicializar o sistema. Por favor, configure o arquivo config.js com suas credenciais do Supabase.', 'erro')
-                return null
-            }
-        }
-
-        // Inicializa o cliente Supabase
-        let supabase = null
-        inicializarSupabase().then(client => {
-            if (client) {
-                supabase = client
-                console.log('Cliente Supabase configurado, verificando autenticação...')
-                verificarAutenticacao()
-            } else {
-                console.error('Falha ao inicializar cliente Supabase')
-                document.getElementById('form-login').style.display = 'none'
-                document.querySelector('main').innerHTML += `
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                        <strong class="font-bold">Erro!</strong>
-                        <span class="block sm:inline"> Não foi possível conectar ao servidor. Por favor, tente novamente mais tarde.</span>
-                    </div>
-                `
-            }
-        })
-
-        // Configurações de segurança
-        const MAX_LOGIN_ATTEMPTS = 5
-        const LOCKOUT_TIME = 15 * 60 * 1000 // 15 minutos em milissegundos
-        let loginAttempts = 0
-        let lockoutUntil = 0
-
-        // Função para sanitizar inputs
-        function sanitizeInput(input) {
-            return input.replace(/[<>]/g, '')
-        }
-
-        // Função para validar força da senha
-        function validarForcaSenha(senha) {
-            const minLength = 8
-            const temMaiuscula = /[A-Z]/.test(senha)
-            const temMinuscula = /[a-z]/.test(senha)
-            const temNumero = /[0-9]/.test(senha)
-            const temEspecial = /[!@#$%^&*(),.?":{}|<>]/.test(senha)
-
-            const erros = []
-            if (senha.length < minLength) erros.push(`A senha deve ter pelo menos ${minLength} caracteres`)
-            if (!temMaiuscula) erros.push('A senha deve conter pelo menos uma letra maiúscula')
-            if (!temMinuscula) erros.push('A senha deve conter pelo menos uma letra minúscula')
-            if (!temNumero) erros.push('A senha deve conter pelo menos um número')
-            if (!temEspecial) erros.push('A senha deve conter pelo menos um caractere especial')
-
-            return {
-                valida: erros.length === 0,
-                erros
-            }
-        }
-
-        // Função para verificar bloqueio
-        function verificarBloqueio() {
-            const agora = Date.now()
-            if (agora < lockoutUntil) {
-                const minutosRestantes = Math.ceil((lockoutUntil - agora) / 60000)
-                throw new Error(`Muitas tentativas de login. Tente novamente em ${minutosRestantes} minutos.`)
-            }
-            if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
-                lockoutUntil = agora + LOCKOUT_TIME
-                throw new Error(`Muitas tentativas de login. Tente novamente em ${LOCKOUT_TIME / 60000} minutos.`)
-            }
-        }
-
-        // Função para registrar tentativa de login
-        function registrarTentativaLogin(sucesso) {
-            if (sucesso) {
-                loginAttempts = 0
-                lockoutUntil = 0
-            } else {
-                loginAttempts++
-                if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
-                    lockoutUntil = Date.now() + LOCKOUT_TIME
-                }
-            }
-        }
-
-        // Funções de loading
-        function mostrarLoading() {
-            document.getElementById('loading').classList.remove('hidden')
-        }
-
-        function esconderLoading() {
-            document.getElementById('loading').classList.add('hidden')
-        }
-
-        // Sistema de notificações
-        function mostrarNotificacao(mensagem, tipo = 'info') {
-            const notificacao = document.createElement('div')
-            notificacao.className = `fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full z-50 ${
-                tipo === 'sucesso' ? 'bg-green-100 text-green-800' :
-                tipo === 'erro' ? 'bg-red-100 text-red-800' :
-                'bg-blue-100 text-blue-800'
-            }`
-            notificacao.innerHTML = `
-                <div class="flex items-center">
-                    <i class="fas ${
-                        tipo === 'sucesso' ? 'fa-check-circle' :
-                        tipo === 'erro' ? 'fa-exclamation-circle' :
-                        'fa-info-circle'
-                    } mr-2"></i>
-                    <span>${sanitizeInput(mensagem)}</span>
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div>
+                <div class="flex justify-center">
+                    <i class="fas fa-wallet text-indigo-600 text-5xl"></i>
                 </div>
-            `
-            document.body.appendChild(notificacao)
-            setTimeout(() => notificacao.classList.remove('translate-x-full'), 100)
-            setTimeout(() => {
-                notificacao.classList.add('translate-x-full')
-                setTimeout(() => notificacao.remove(), 300)
-            }, 3000)
-        }
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    AssineFácil
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    Gerencie suas assinaturas de forma inteligente
+                </p>
+            </div>
+            <form class="mt-8 space-y-6" id="login-form">
+                <div class="rounded-md shadow-sm -space-y-px">
+                    <div>
+                        <label for="email" class="sr-only">E-mail</label>
+                        <input id="email" name="email" type="email" autocomplete="email" required
+                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                            placeholder="E-mail">
+                    </div>
+                    <div>
+                        <label for="password" class="sr-only">Senha</label>
+                        <input id="password" name="password" type="password" autocomplete="current-password" required
+                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                            placeholder="Senha">
+                    </div>
+                </div>
 
-        // Verifica se o usuário já está autenticado
-        async function verificarAutenticacao() {
-            if (!supabase) {
-                console.error('Tentativa de verificar autenticação sem cliente Supabase')
-                return
-            }
-            
-            mostrarLoading()
-            try {
-                console.log('Verificando sessão atual...')
-                const { data: { session }, error } = await supabase.auth.getSession()
-                
-                if (error) {
-                    console.error('Erro ao verificar sessão:', error)
-                    throw error
-                }
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="remember-me" name="remember-me" type="checkbox"
+                            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                            Lembrar-me
+                        </label>
+                    </div>
 
-                if (session) {
-                    console.log('Sessão encontrada, redirecionando...')
-                    window.location.href = '/dashboard.html'
-                    return
-                } else {
-                    console.log('Nenhuma sessão encontrada')
-                }
-            } catch (error) {
-                console.error('Erro ao verificar autenticação:', {
-                    mensagem: error.message,
-                    stack: error.stack,
-                    nome: error.name
-                })
-                mostrarNotificacao('Erro ao verificar autenticação', 'erro')
-            } finally {
-                esconderLoading()
-            }
-        }
+                    <div class="text-sm">
+                        <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
+                            Esqueceu sua senha?
+                        </a>
+                    </div>
+                </div>
 
+                <div>
+                    <button type="submit"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <i class="fas fa-sign-in-alt text-indigo-500 group-hover:text-indigo-400"></i>
+                        </span>
+                        Entrar
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-gray-50 text-gray-500">
+                            Ou continue com
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mt-6 grid grid-cols-2 gap-3">
+                    <div>
+                        <a href="#"
+                            class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fab fa-google text-red-600"></i>
+                            <span class="ml-2">Google</span>
+                        </a>
+                    </div>
+
+                    <div>
+                        <a href="#"
+                            class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fab fa-facebook text-blue-600"></i>
+                            <span class="ml-2">Facebook</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="border-t border-gray-200 pt-8 md:flex md:items-center md:justify-between">
+                <div class="flex space-x-6 md:order-2">
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+                <p class="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
+                    &copy; 2024 AssineFácil. Todos os direitos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
         // Função para fazer login
         async function fazerLogin(event) {
-            event.preventDefault()
+            event.preventDefault();
             
-            if (!supabase) {
-                console.error('Tentativa de login sem cliente Supabase inicializado')
-                mostrarNotificacao('Sistema temporariamente indisponível. Por favor, tente novamente mais tarde.', 'erro')
-                return
-            }
-
-            mostrarLoading()
-            const mensagemErro = document.getElementById('mensagem-erro')
-            const mensagemSucesso = document.getElementById('mensagem-sucesso')
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
 
             try {
-                console.log('Iniciando processo de login...')
-                
-                // Verifica bloqueio
-                verificarBloqueio()
-
-                // Sanitiza e valida inputs
-                const email = sanitizeInput(document.getElementById('email').value.trim())
-                const senha = document.getElementById('senha').value
-
-                console.log('Validando campos...')
-                // Validações básicas
-                if (!email || !senha) {
-                    throw new Error('Por favor, preencha todos os campos')
-                }
-
-                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    throw new Error('Email inválido')
-                }
-
-                console.log('Tentando autenticar...')
-                // Tenta fazer login
+                const supabase = initSupabase();
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email,
-                    password: senha
-                })
+                    password
+                });
 
-                if (error) {
-                    console.error('Erro na autenticação:', {
-                        codigo: error.code,
-                        mensagem: error.message,
-                        status: error.status
-                    })
-                    registrarTentativaLogin(false)
-                    throw error
-                }
+                if (error) throw error;
 
-                console.log('Login realizado com sucesso')
-                registrarTentativaLogin(true)
-                mensagemErro.classList.add('hidden')
-                mensagemSucesso.classList.remove('hidden')
-                mostrarNotificacao('Login realizado com sucesso', 'sucesso')
-
-                // Limpa os campos sensíveis
-                document.getElementById('senha').value = ''
-
-                // Redireciona após um pequeno delay
-                setTimeout(() => {
-                    window.location.href = '/dashboard.html'
-                }, 1000)
+                // Redireciona para o dashboard
+                window.location.href = '/dashboard.html';
             } catch (error) {
-                console.error('Erro detalhado no login:', {
-                    mensagem: error.message,
-                    stack: error.stack,
-                    nome: error.name
-                })
-                
-                let mensagemErroTexto = 'Erro ao fazer login'
-                
-                if (error.message === 'Invalid login credentials') {
-                    mensagemErroTexto = 'Email ou senha inválidos'
-                } else if (error.message.includes('tentativas de login')) {
-                    mensagemErroTexto = error.message
-                } else if (error.message.includes('Email inválido')) {
-                    mensagemErroTexto = error.message
-                } else if (error.message.includes('preencha todos os campos')) {
-                    mensagemErroTexto = error.message
-                }
-
-                mensagemErro.textContent = mensagemErroTexto
-                mensagemErro.classList.remove('hidden')
-                document.getElementById('mensagem-sucesso').classList.add('hidden')
-                mostrarNotificacao(mensagemErroTexto, 'erro')
-            } finally {
-                esconderLoading()
+                console.error('Erro ao fazer login:', error);
+                alert('Erro ao fazer login. Verifique suas credenciais.');
             }
         }
 
         // Adiciona evento de submit ao formulário
-        document.getElementById('form-login').addEventListener('submit', fazerLogin)
-
-        // Adiciona proteção contra XSS nos inputs
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('input', (e) => {
-                e.target.value = sanitizeInput(e.target.value)
-            })
-        })
+        document.getElementById('login-form').addEventListener('submit', fazerLogin);
     </script>
 </body>
 </html> 

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento - AssineFácil</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💳</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/config.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <script>
+        // Verifica se o usuário está autenticado
+        window.onload = async () => {
+            const isAuthenticated = await checkAuth();
+            if (!isAuthenticated) {
+                window.location.href = '/login.html';
+            }
+        };
+    </script>
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/dashboard.html" class="flex items-center">
+                            <i class="fas fa-wallet text-indigo-600 text-2xl mr-2"></i>
+                            <span class="text-2xl text-indigo-600">AssineFácil</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="logout()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-sign-out-alt mr-1"></i>
+                        Sair
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        <div class="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+            <div class="bg-white shadow sm:rounded-lg p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4" id="plan-title">Pagamento via PIX</h2>
+                <div class="mb-6">
+                    <p class="text-lg text-gray-700" id="plan-desc">Carregando informações do plano...</p>
+                    <p class="text-3xl font-extrabold text-indigo-600 mt-2" id="plan-price">R$0,00</p>
+                </div>
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Escaneie o QR Code abaixo para pagar com PIX:</h3>
+                    <div id="pix-qr-container" class="flex justify-center mb-4">
+                        <canvas id="pix-qr" width="200" height="200"></canvas>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="pix-code" class="w-full px-3 py-2 border rounded text-gray-700" readonly>
+                        <button onclick="copyPixCode()" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Copiar</button>
+                    </div>
+                </div>
+                <div class="mt-6 text-center">
+                    <p class="text-green-600 font-semibold" id="payment-status">Aguardando pagamento...</p>
+                    <p class="text-sm text-gray-500 mt-2">Assim que o pagamento for confirmado, seu acesso será liberado automaticamente.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="border-t border-gray-200 pt-8 md:flex md:items-center md:justify-between">
+                <div class="flex space-x-6 md:order-2">
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-gray-500">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+                <p class="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
+                    &copy; 2024 AssineFácil. Todos os direitos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script>
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        function copyPixCode() {
+            const pixInput = document.getElementById('pix-code');
+            pixInput.select();
+            document.execCommand('copy');
+        }
+
+        async function loadPixPayment() {
+            const planId = getUrlParameter('planid');
+            if (!planId) {
+                window.location.href = '/plans.html';
+                return;
+            }
+            const supabase = initSupabase();
+            const { data: plan, error } = await supabase
+                .from('plans')
+                .select('*')
+                .eq('id', planId)
+                .single();
+            if (error || !plan) {
+                document.getElementById('plan-title').textContent = 'Plano não encontrado';
+                document.getElementById('plan-desc').textContent = '';
+                document.getElementById('plan-price').textContent = '';
+                return;
+            }
+            document.getElementById('plan-title').textContent = `Pagamento via PIX - ${plan.name}`;
+            document.getElementById('plan-desc').textContent = plan.description;
+            document.getElementById('plan-price').textContent = `R$${plan.price.toFixed(2)}`;
+            document.getElementById('pix-code').value = plan.pix_code;
+            QRCode.toCanvas(document.getElementById('pix-qr'), plan.pix_code, { width: 200 });
+            checkPixPayment(planId);
+        }
+
+        async function checkPixPayment(planId) {
+            const supabase = initSupabase();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+            // Checa a cada 5 segundos se o pagamento foi confirmado
+            setInterval(async () => {
+                const { data: payment } = await supabase
+                    .from('payments')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .eq('plan_id', planId)
+                    .eq('status', 'completed')
+                    .single();
+                if (payment) {
+                    document.getElementById('payment-status').textContent = 'Pagamento confirmado! Redirecionando...';
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 2000);
+                }
+            }, 5000);
+        }
+
+        window.addEventListener('load', loadPixPayment);
+    </script>
+</body>
+</html> 

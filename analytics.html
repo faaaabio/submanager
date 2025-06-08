@@ -242,7 +242,7 @@
             subscriptions.forEach(sub => {
                 const data = new Date(sub.created_at);
                 const mes = data.getMonth();
-                gastosPorMes[mes] += sub.price || 0;
+                gastosPorMes[mes] += sub.valor || 0;
             });
 
             return {
@@ -256,11 +256,11 @@
             const categorias = {};
             
             subscriptions.forEach(sub => {
-                const categoria = sub.category || 'Outros';
+                const categoria = sub.categoria || 'Outros';
                 if (!categorias[categoria]) {
                     categorias[categoria] = 0;
                 }
-                categorias[categoria] += sub.price || 0;
+                categorias[categoria] += sub.valor || 0;
             });
 
             return {
@@ -279,9 +279,9 @@
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${new Date(sub.created_at).toLocaleDateString()}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${sub.name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${sub.category || 'Outros'}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">R$ ${(sub.price || 0).toFixed(2)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${sub.nome}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${sub.categoria || 'Outros'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">R$ ${(sub.valor || 0).toFixed(2)}</td>
                     `;
                     tbody.appendChild(tr);
                 });

@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planos de Streaming - Mobile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .category {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .category-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            padding: 15px 0;
+        }
+        
+        .carousel-wrapper {
+            display: flex;
+            transition: transform 0.3s ease;
+            gap: 15px;
+            padding: 0 15px;
+        }
+        
+        .service-card {
+            min-width: 260px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f0f0f0;
+            position: relative;
+        }
+        
+        .service-name {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .service-plan {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .price {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .share-info {
+            text-align: center;
+        }
+        
+        .share-type {
+            font-size: 13px;
+            color: #007AFF;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .user-limit {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 15px;
+            margin-top: 10px;
+        }
+        
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .nav-dot.active {
+            background: #667eea;
+        }
+        
+        .carousel-arrows {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        
+        .carousel-arrows:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .carousel-arrows.prev {
+            left: 10px;
+        }
+        
+        .carousel-arrows.next {
+            right: 10px;
+        }
+        
+        .notes {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .notes h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .note-section {
+            margin-bottom: 15px;
+        }
+        
+        .note-section h4 {
+            color: #667eea;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .note-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .note-section li {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+        
+        .note-section li:before {
+            content: "•";
+            color: #667eea;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        @media (max-width: 480px) {
+            .service-card {
+                min-width: 220px;
+                padding: 15px;
+            }
+            
+            .carousel-arrows {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 Planos de Streaming</h1>
+            <p>Apps com compartilhamento familiar ou por convite</p>
+        </div>
+        
+        <div class="category">
+            <div class="category-header">
+                🎬 Streaming de Vídeo
+            </div>
+            <div class="carousel-container">
+                <button class="carousel-arrows prev" onclick="moveCarousel('video', -1)">‹</button>
+                <button class="carousel-arrows next" onclick="moveCarousel('video', 1)">›</button>
+                <div class="carousel-wrapper" id="video-carousel">
+                    <div class="service-card">
+                        <div class="service-name">Netflix</div>
+                        <div class="service-plan">Padrão</div>
+                        <div class="price">R$ 39,90</div>
+                        <div class="share-info">
+                            <div class="share-type">Perfis familiares</div>
+                            <div class="user-limit">2 telas simultâneas</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Netflix</div>
+                        <div class="service-plan">Premium</div>
+                        <div class="price">R$ 55,90</div>
+                        <div class="share-info">
+                            <div class="share-type">Perfis familiares</div>
+                            <div class="user-limit">4 telas simultâneas</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Disney+</div>
+                        <div class="service-plan">Mensal</div>
+                        <div class="price">R$ 33,90</div>
+                        <div class="share-info">
+                            <div class="share-type">Perfis familiares</div>
+                            <div class="user-limit">4 telas simultâneas</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Prime Video</div>
+                        <div class="service-plan">Mensal</div>
+                        <div class="price">R$ 14,90</div>
+                        <div class="share-info">
+                            <div class="share-type">Perfis familiares</div>
+                            <div class="user-limit">3 telas simultâneas</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">HBO Max</div>
+                        <div class="service-plan">Mensal</div>
+                        <div class="price">R$ 34,90</div>
+                        <div class="share-info">
+                            <div class="share-type">Perfis familiares</div>
+                            <div class="user-limit">3 telas simultâneas</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">YouTube Premium</div>
+                        <div class="service-plan">Familiar</div>
+                        <div class="price">R$ 33,90</div>
+                        <div class="share-info">
+                            <div class="share-type">Convite por email</div>
+                            <div class="user-limit">6 membros</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-nav" id="video-nav"></div>
+            </div>
+        </div>
+        
+        <div class="category">
+            <div class="category-header">
+                🎵 Streaming de Música
+            </div>
+            <div class="carousel-container">
+                <button class="carousel-arrows prev" onclick="moveCarousel('music', -1)">‹</button>
+                <button class="carousel-arrows next" onclick="moveCarousel('music', 1)">›</button>
+                <div class="carousel-wrapper" id="music-carousel">
+                    <div class="service-card">
+                        <div class="service-name">Spotify</div>
+                        <div class="service-plan">Família</div>
+                        <div class="price">R$ 34,90</div>
+                        <div class="share-info">
+                            <div class="share-type">Convite por email</div>
+                            <div class="user-limit">6 contas</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Apple Music</div>
+                        <div class="service-plan">Família</div>
+                        <div class="price">R$ 28,90</div>
+                        <div class="share-info">
+                            <div class="share-type">Compartilhamento Familiar</div>
+                            <div class="user-limit">6 membros</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">YouTube Music</div>
+                        <div class="service-plan">Família</div>
+                        <div class="price">R$ 33,90</div>
+                        <div class="share-info">
+                            <div class="share-type">Convite por email</div>
+                            <div class="user-limit">6 membros</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Deezer</div>
+                        <div class="service-plan">Família</div>
+                        <div class="price">R$ 34,90</div>
+                        <div class="share-info">
+                            <div class="share-type">Convite por email</div>
+                            <div class="user-limit">6 perfis</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Amazon Music</div>
+                        <div class="service-plan">Família</div>
+                        <div class="price">R$ 24,90</div>
+                        <div class="share-info">
+                            <div class="share-type">Convite por email</div>
+                            <div class="user-limit">6 membros</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-nav" id="music-nav"></div>
+            </div>
+        </div>
+        
+        <div class="category">
+            <div class="category-header">
+                🎨 Ferramentas de Design
+            </div>
+            <div class="carousel-container">
+                <button class="carousel-arrows prev" onclick="moveCarousel('design', -1)">‹</button>
+                <button class="carousel-arrows next" onclick="moveCarousel('design', 1)">›</button>
+                <div class="carousel-wrapper" id="design-carousel">
+                    <div class="service-card">
+                        <div class="service-name">Canva Pro</div>
+                        <div class="service-plan">Mensal</div>
+                        <div class="price">R$ 54,90</div>
+                        <div class="share-info">
+                            <div class="share-type">Convite por email</div>
+                            <div class="user-limit">5 membros</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Adobe Creative</div>
+                        <div class="service-plan">Completo</div>
+                        <div class="price">R$ 149,00</div>
+                        <div class="share-info">
+                            <div class="share-type">Compartilhamento familiar</div>
+                            <div class="user-limit">6 usuários</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Figma</div>
+                        <div class="service-plan">Professional</div>
+                        <div class="price">US$ 12/user</div>
+                        <div class="share-info">
+                            <div class="share-type">Convite por email</div>
+                            <div class="user-limit">Ilimitado</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Notion</div>
+                        <div class="service-plan">Plus</div>
+                        <div class="price">US$ 8/user</div>
+                        <div class="share-info">
+                            <div class="share-type">Convite por email</div>
+                            <div class="user-limit">Ilimitado</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-nav" id="design-nav"></div>
+            </div>
+        </div>
+        
+        <div class="category">
+            <div class="category-header">
+                🤖 Ferramentas de IA
+            </div>
+            <div class="carousel-container">
+                <button class="carousel-arrows prev" onclick="moveCarousel('ai', -1)">‹</button>
+                <button class="carousel-arrows next" onclick="moveCarousel('ai', 1)">›</button>
+                <div class="carousel-wrapper" id="ai-carousel">
+                    <div class="service-card">
+                        <div class="service-name">ChatGPT Plus</div>
+                        <div class="service-plan">Team</div>
+                        <div class="price">US$ 25/user</div>
+                        <div class="share-info">
+                            <div class="share-type">Convite por email</div>
+                            <div class="user-limit">Mín. 2 usuários</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Claude Pro</div>
+                        <div class="service-plan">Team</div>
+                        <div class="price">US$ 25/user</div>
+                        <div class="share-info">
+                            <div class="share-type">Convite por email</div>
+                            <div class="user-limit">Múltiplos usuários</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Midjourney</div>
+                        <div class="service-plan">Standard</div>
+                        <div class="price">US$ 30</div>
+                        <div class="share-info">
+                            <div class="share-type">Compartilhamento</div>
+                            <div class="user-limit">1 conta</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Copy.ai</div>
+                        <div class="service-plan">Pro</div>
+                        <div class="price">US$ 36</div>
+                        <div class="share-info">
+                            <div class="share-type">Convite por email</div>
+                            <div class="user-limit">5 usuários</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Jasper AI</div>
+                        <div class="service-plan">Creator</div>
+                        <div class="price">US$ 39</div>
+                        <div class="share-info">
+                            <div class="share-type">Convite por email</div>
+                            <div class="user-limit">1 usuário + colaboradores</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-nav" id="ai-nav"></div>
+            </div>
+        </div>
+        
+        <div class="category">
+            <div class="category-header">
+                📱 Produtividade
+            </div>
+            <div class="carousel-container">
+                <button class="carousel-arrows prev" onclick="moveCarousel('productivity', -1)">‹</button>
+                <button class="carousel-arrows next" onclick="moveCarousel('productivity', 1)">›</button>
+                <div class="carousel-wrapper" id="productivity-carousel">
+                    <div class="service-card">
+                        <div class="service-name">Google One</div>
+                        <div class="service-plan">100GB</div>
+                        <div class="price">R$ 6,99</div>
+                        <div class="share-info">
+                            <div class="share-type">Compartilhamento Familiar</div>
+                            <div class="user-limit">6 membros</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Google One</div>
+                        <div class="service-plan">2TB</div>
+                        <div class="price">R$ 34,99</div>
+                        <div class="share-info">
+                            <div class="share-type">Compartilhamento Familiar</div>
+                            <div class="user-limit">6 membros</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">iCloud+</div>
+                        <div class="service-plan">200GB</div>
+                        <div class="price">R$ 12,90</div>
+                        <div class="share-info">
+                            <div class="share-type">Compartilhamento Familiar</div>
+                            <div class="user-limit">6 membros</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Microsoft 365</div>
+                        <div class="service-plan">Família</div>
+                        <div class="price">R$ 32,90</div>
+                        <div class="share-info">
+                            <div class="share-type">Convite por email</div>
+                            <div class="user-limit">6 usuários</div>
+                        </div>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-name">Dropbox</div>
+                        <div class="service-plan">Plus</div>
+                        <div class="price">R$ 59,90</div>
+                        <div class="share-info">
+                            <div class="share-type">Compartilhamento familiar</div>
+                            <div class="user-limit">6 usuários</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-nav" id="productivity-nav"></div>
+            </div>
+        </div>
+        
+        <div class="notes">
+            <h3>💡 Dicas Importantes</h3>
+            
+            <div class="note-section">
+                <h4>Tipos de Compartilhamento:</h4>
+                <ul>
+                    <li><strong>Perfis familiares:</strong> Compartilhamento dentro da mesma conta</li>
+                    <li><strong>Convite por email:</strong> Envio de convites para emails específicos</li>
+                    <li><strong>Compartilhamento Familiar:</strong> Sistema integrado Apple/Google</li>
+                </ul>
+            </div>
+            
+            <div class="note-section">
+                <h4>Para Economizar:</h4>
+                <ul>
+                    <li>Divida os custos entre os membros da família</li>
+                    <li>Considere planos anuais com desconto</li>
+                    <li>Verifique pacotes que incluem múltiplos serviços</li>
+                    <li>Alguns serviços exigem mesmo país/região</li>
+                </ul>
+            </div>
+            
+            <p style="font-size: 12px; color: #888; text-align: center; margin-top: 20px;">
+                *Preços sujeitos a alteração - Junho 2025
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de carrossel
+        const carousels = {
+            video: { currentIndex: 0, cards: [] },
+            music: { currentIndex: 0, cards: [] },
+            design: { currentIndex: 0, cards: [] },
+            ai: { currentIndex: 0, cards: [] },
+            productivity: { currentIndex: 0, cards: [] }
+        };
+
+        // Inicializar carrosseis
+        function initCarousels() {
+            Object.keys(carousels).forEach(category => {
+                const carousel = document.getElementById(`${category}-carousel`);
+                const cards = carousel.querySelectorAll('.service-card');
+                carousels[category].cards = Array.from(cards);
+                
+                // Criar indicadores de navegação
+                createNavDots(category, cards.length);
+                updateNavDots(category);
+                
+                // Auto-play opcional (descomente para ativar)
+                // setInterval(() => moveCarousel(category, 1), 5000);
+            });
+        }
+
+        // Criar pontos de navegação
+        function createNavDots(category, count) {
+            const navContainer = document.getElementById(`${category}-nav`);
+            navContainer.innerHTML = '';
+            
+            for (let i = 0; i < count; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'nav-dot';
+                dot.onclick = () => goToSlide(category, i);
+                navContainer.appendChild(dot);
+            }
+        }
+
+        // Mover carrossel
+        function moveCarousel(category, direction) {
+            const carousel = carousels[category];
+            const totalCards = carousel.cards.length;
+            
+            carousel.currentIndex += direction;
+            
+            if (carousel.currentIndex >= totalCards) {
+                carousel.currentIndex = 0;
+            } else if (carousel.currentIndex < 0) {
+                carousel.currentIndex = totalCards - 1;
+            }
+            
+            updateCarousel(category);
+        }
+
+        // Ir para slide específico
+        function goToSlide(category, index) {
+            carousels[category].currentIndex = index;
+            updateCarousel(category);
+        }
+
+        // Atualizar posição do carrossel
+        function updateCarousel(category) {
+            const wrapper = document.getElementById(`${category}-carousel`);
+            const cardWidth = 260 + 15; // largura do card + gap
+            const translateX = -carousels[category].currentIndex * cardWidth;
+            
+            wrapper.style.transform = `translateX(${translateX}px)`;
+            updateNavDots(category);
+        }
+
+        // Atualizar indicadores de navegação
+        function updateNavDots(category) {
+            const navContainer = document.getElementById(`${category}-nav`);
+            const dots = navContainer.querySelectorAll('.nav-dot');
+            
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === carousels[category].currentIndex);
+            });
+        }
+
+        // Suporte para gestos de toque (swipe)
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let currentTouchCategory = null;
+
+        function handleTouchStart(e, category) {
+            touchStartX = e.changedTouches[0].screenX;
+            currentTouchCategory = category;
+        }
+
+        function handleTouchEnd(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }
+
+        function handleSwipe() {
+            if (!currentTouchCategory) return;
+            
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe para esquerda - próximo
+                    moveCarousel(currentTouchCategory, 1);
+                } else {
+                    // Swipe para direita - anterior
+                    moveCarousel(currentTouchCategory, -1);
+                }
+            }
+            
+            currentTouchCategory = null;
+        }
+
+        // Adicionar event listeners para toque
+        document.addEventListener('DOMContentLoaded', () => {
+            initCarousels();
+            
+            Object.keys(carousels).forEach(category => {
+                const carousel = document.getElementById(`${category}-carousel`);
+                carousel.addEventListener('touchstart', (e) => handleTouchStart(e, category));
+                carousel.addEventListener('touchend', handleTouchEnd);
+            });
+        });
+    </script>
+</body>
+</html>
